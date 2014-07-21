@@ -1,5 +1,7 @@
 'fileTypes': [
-  'y'
+  'y',
+  'yp',
+  'yy'
 ]
 'name': 'Bison'
 'patterns': [
