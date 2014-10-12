@@ -6,51 +6,93 @@
 'name': 'Bison'
 'patterns': [
   {
-    'begin': '^%\\{'
-    'contentName': 'source.c'
-    'end': '%\\}'
-    'name': 'meta.prologue.bison'
-    'patterns': [
-      {
-        'include': 'source.c'
-      }
+    'name': 'comment.line.double-slash.bison'
+    'match': '//.*$'
+  }
+  {
+    'contentName': 'comment.block.bison'
+    'begin': '/\\*'
+    'end': '\\*/'
+    'captures':
+      '0':
+        'name': 'punctuation.definition.comment.bison'
+  }
+  {
+    'contentName': 'string.quoted.single.bison'
+    'begin': "'"
+    'beginCaptures':
+      '0':
+        'name': 'punctuation.definition.string.begin.bison'
+    'end': "'"
+    'endCaptures':
+      '0':
+        'name': 'punctuation.definition.string.end.bison'
+  }
+  {
+    'name': 'keyword.bison'
+    'match': '%(type|left|right|nonassoc|token|union)'
+  }
+  {
+    'contentName': 'keyword.bison'
+    'begin': '^%%$'
+    'end': '^(%%)(.*)'
+    'beginCaptures':
+      '0':
+        'name': 'keyword.operator.bison'
+    'endCaptures':
+      '1':
+        'name': 'keyword.operator.bison'
+    'patterns' : [
+      'contentName': 'string.regexp.bison'
+      'begin': '(\\w*)\\s(:)'
+      'beginCaptures':
+        '1':
+          'name': 'variable.language.bison'
+        '2':
+          'name': 'keyword.operator.bison'
+      'end': ';'
+      'endCaptures':
+        '0':
+          'name': 'keyword.operator.bison'
+      'patterns': [
+        {
+          'name': 'keyword.bison'
+          'match': '%prec'
+        }
+        {
+          'name': 'keyword.operator.bison'
+          'match': '\\|'
+        }
+        {
+          'name': 'source.go'
+          'begin': '\\{'
+          'end': '\\}'
+          'patterns': [
+            {
+              'name': 'string.embedded.bison'
+              'match': '\\$[0-9\\$]'
+            }
+            {
+              'include': 'source.go'
+            }
+          ]
+        }
+      ]
     ]
   }
   {
-    'begin': '^(?!%%$)'
-    'end': '^(?=%%$)'
-    'name': 'meta.declarations.bison'
-  }
-  {
-    'begin': '^%%$'
-    'end': '$.^'
-    'patterns': [
+    'contentName': 'string.interpolated.bison'
+    'begin': '^%\\{'
+    'end': '%\\}'
+    'beginCaptures':
+      '0':
+        'name': 'keyword.operator.bracket.bison'
+    'endCaptures':
+      '0':
+        'name': 'keyword.operator.bracket.bison'
+    'patterns':[
       {
-        'begin': '^(?!%%$)'
-        'contentName': 'meta.rules.bison'
-        'end': '^(?=%%$)'
-        'patterns': [
-          {
-            'include': 'source.c'
-          }
-        ]
-      }
-      {
-        'begin': '^%%$'
-        'contentName': 'meta.epilogue.bison'
-        'end': '$.^'
-        'patterns': [
-          {
-            'begin': '^'
-            'end': '$.^'
-            'name': 'source.c'
-            'patterns': [
-              {
-                'include': 'source.c'
-              }
-            ]
-          }
-        ]
+        'include': 'source.go'
       }
     ]
   }
