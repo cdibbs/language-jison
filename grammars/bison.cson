@@ -1,66 +1,65 @@
 'fileTypes': [
-  'y',
-  'yp',
-  'yy'
+  'jison',
+  'jisonlex'
 ]
-'name': 'Bison'
+'name': 'Jison'
 'patterns': [
   {
-    'name': 'comment.line.double-slash.bison'
+    'name': 'comment.line.double-slash.jison'
     'match': '//.*$'
   }
   {
-    'contentName': 'comment.block.bison'
+    'contentName': 'comment.block.jison'
     'begin': '/\\*'
     'end': '\\*/'
     'captures':
       '0':
-        'name': 'punctuation.definition.comment.bison'
+        'name': 'punctuation.definition.comment.jison'
   }
   {
-    'contentName': 'string.quoted.single.bison'
+    'contentName': 'string.quoted.single.jison'
     'begin': "'"
     'beginCaptures':
       '0':
-        'name': 'punctuation.definition.string.begin.bison'
+        'name': 'punctuation.definition.string.begin.jison'
     'end': "'"
     'endCaptures':
       '0':
-        'name': 'punctuation.definition.string.end.bison'
+        'name': 'punctuation.definition.string.end.jison'
   }
   {
-    'name': 'keyword.bison'
+    'name': 'keyword.jison'
     'match': '%(type|left|right|nonassoc|token|union)'
   }
   {
-    'contentName': 'keyword.bison'
+    'contentName': 'keyword.jison'
     'begin': '^%%$'
     'end': '^(%%)(.*)'
     'beginCaptures':
       '0':
-        'name': 'keyword.operator.bison'
+        'name': 'keyword.operator.jison'
     'endCaptures':
       '1':
-        'name': 'keyword.operator.bison'
+        'name': 'keyword.operator.jison'
     'patterns' : [
-      'contentName': 'string.regexp.bison'
+      'contentName': 'string.regexp.jison'
       'begin': '(\\w*)\\s(:)'
       'beginCaptures':
         '1':
-          'name': 'variable.language.bison'
+          'name': 'variable.language.jison'
         '2':
-          'name': 'keyword.operator.bison'
+          'name': 'keyword.operator.jison'
       'end': ';'
       'endCaptures':
         '0':
-          'name': 'keyword.operator.bison'
+          'name': 'keyword.operator.jison'
       'patterns': [
         {
-          'name': 'keyword.bison'
+          'name': 'keyword.jison'
           'match': '%prec'
         }
         {
-          'name': 'keyword.operator.bison'
+          'name': 'keyword.operator.jison'
           'match': '\\|'
         }
         {
@@ -69,7 +68,7 @@
           'end': '\\}'
           'patterns': [
             {
-              'name': 'string.embedded.bison'
+              'name': 'string.embedded.jison'
               'match': '\\$[0-9\\$]'
             }
             {
@@ -81,15 +80,15 @@
     ]
   }
   {
-    'contentName': 'string.interpolated.bison'
+    'contentName': 'string.interpolated.jison'
     'begin': '^%\\{'
     'end': '%\\}'
     'beginCaptures':
       '0':
-        'name': 'keyword.operator.bracket.bison'
+        'name': 'keyword.operator.bracket.jison'
     'endCaptures':
       '0':
-        'name': 'keyword.operator.bracket.bison'
+        'name': 'keyword.operator.bracket.jison'
     'patterns':[
       {
         'include': 'source.go'
@@ -97,4 +96,4 @@
     ]
   }
 ]
-'scopeName': 'source.bison'
+'scopeName': 'source.jison'
