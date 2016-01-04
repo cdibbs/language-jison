@@ -2,7 +2,7 @@
   "name": "language-jison",
   "version": "1.0.0",
   "private": true,
-  "description": "Syntax support for Bison files",
+  "description": "Syntax support for Jison files",
   "repository": "https://github.com/cdibbs/language-jison",
   "license": "MIT",
   "engines": {
