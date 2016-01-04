@@ -1,9 +1,9 @@
 {
-  "name": "language-bison",
+  "name": "language-jison",
   "version": "1.0.0",
   "private": true,
   "description": "Syntax support for Bison files",
-  "repository": "https://github.com/toroidal-code/language-bison",
+  "repository": "https://github.com/cdibbs/language-jison",
   "license": "MIT",
   "engines": {
     "atom": ">0.50.0"
