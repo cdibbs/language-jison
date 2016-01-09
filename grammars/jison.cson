@@ -1,99 +1,313 @@
+'scopeName': 'source.jison'
 'fileTypes': [
-  'jison',
-  'jisonlex'
+  'jison'
 ]
 'name': 'Jison'
 'patterns': [
   {
-    'name': 'comment.line.double-slash.jison'
-    'match': '//.*$'
-  }
-  {
-    'contentName': 'comment.block.jison'
-    'begin': '/\\*'
-    'end': '\\*/'
+    'begin': '^(%%)$'                             # Has to be the first pattern
+    'comment': 'Match from first %% symbol to EOF'
     'captures':
       '0':
-        'name': 'punctuation.definition.comment.jison'
-  }
-  {
-    'contentName': 'string.quoted.single.jison'
-    'begin': "'"
-    'beginCaptures':
-      '0':
-        'name': 'punctuation.definition.string.begin.jison'
-    'end': "'"
-    'endCaptures':
-      '0':
-        'name': 'punctuation.definition.string.end.jison'
-  }
-  {
-    'name': 'keyword.jison'
-    'match': '%(type|left|right|nonassoc|token|union)'
-  }
-  {
-    'contentName': 'keyword.jison'
-    'begin': '^%%$'
-    'end': '^(%%)(.*)'
-    'beginCaptures':
-      '0':
-        'name': 'keyword.operator.jison'
-    'endCaptures':
-      '1':
-        'name': 'keyword.operator.jison'
-    'patterns' : [
-      'contentName': 'string.regexp.jison'
-      'begin': '(\\w*)\\s(:)'
-      'beginCaptures':
-        '1':
-          'name': 'variable.language.jison'
-        '2':
-          'name': 'keyword.operator.jison'
-      'end': ';'
-      'endCaptures':
-        '0':
-          'name': 'keyword.operator.jison'
-      'patterns': [
-        {
-          'name': 'keyword.jison'
-          'match': '%prec'
-        }
-        {
-          'name': 'keyword.operator.jison'
-          'match': '\\|'
-        }
-        {
-          'name': 'source.go'
-          'begin': '\\{'
-          'end': '\\}'
-          'patterns': [
-            {
-              'name': 'string.embedded.jison'
-              'match': '\\$[0-9\\$]'
-            }
-            {
-              'include': 'source.go'
-            }
-          ]
-        }
-      ]
-    ]
-  }
-  {
-    'contentName': 'string.interpolated.jison'
-    'begin': '^%\\{'
-    'end': '%\\}'
-    'beginCaptures':
-      '0':
-        'name': 'keyword.operator.bracket.jison'
-    'endCaptures':
-      '0':
-        'name': 'keyword.operator.bracket.jison'
-    'patterns':[
+        'name': 'meta.separator.section.jison'    # Match first %% symbol
+    'patterns': [
       {
-        'include': 'source.go'
+        'begin': '^(%%)$'                         # Has to be the first pattern
+        'comment': 'Match from second %% symbol to EOF'
+        'captures':
+          '0':
+            'name': 'meta.separator.section.jison'# Match second %% symbol
+        'patterns': [
+          {
+            'include': '#exceeding_sections'      # Has to be the first pattern
+          }
+          {
+            'include': '#third_section'
+          }
+        ]
+      }
+      {
+        'include': '#second_section'
       }
     ]
   }
+  {
+    'include': '#first_section'
+  }
 ]
-'scopeName': 'source.jison'
+'repository':
+  'first_section':
+    'patterns': [
+      {
+        'begin': '(?!^%%$)'
+        'end': '(?=^%%$)'
+        'comment': 'Match the content of the first section'
+        'name': 'meta.section.first.jison'
+        'patterns': [
+          {
+            'include': '#prologue'
+          }
+          {
+            'include': '#declarations'
+          }
+          {
+            'include': '#comments'
+            'comment': 'jison supports Javascript comments'
+          }
+        ]
+      }
+    ]
+  'second_section':
+    'patterns': [
+      {
+        'begin': '(?!^%%$)'
+        'end': '(?=^%%$)'
+        'comment': 'Match the content of the second section'
+        'name': 'meta.section.second.jison'
+        'patterns': [
+          {
+            'include': '#comments'
+            'comment': 'jison supports C/C++ comments'
+          }
+          {
+            'include': '#rules'
+          }
+        ]
+      }
+    ]
+  'third_section':
+    'patterns': [
+      {
+        'begin': '(?!^%%$)'
+        'end': '(?=^%%$)'
+        'comment': 'Match the content of the third section'
+        'name': 'meta.section.third.jison'
+        'patterns': [
+          {
+            'include': 'source.js'
+            'comment': 'Epilogue contains Javascript code only'
+          }
+        ]
+      }
+    ]
+  'exceeding_sections':
+    'patterns': [
+      'begin': '^(%%)$'
+      'name': 'invalid.illegal.exceeding-sections.jison'
+      'comment': 'Match exceeding sections created by too many %% symbols'
+    ]
+  'prologue':
+    'patterns': [
+      'begin': '%{'
+      'end': '%}'
+      'comment': 'Match the prologues, first section only'
+      'name': 'meta.section.prologue'
+      'captures':
+        '0':
+          'name': 'meta.separator.prologue.jison' # Match %{ and %} symbols
+      'patterns': [
+        {
+          'include': 'source.js'
+          'comment': 'Prologues contain Javascript code only'
+        }
+      ]
+    ]
+  'declarations':
+    'patterns': [
+      {
+        'include': '#directives'
+      }
+      {
+        'include': '#types'
+      }
+      {
+        'include': '#symbols'
+      }
+      {
+        'include': '#numbers'
+      }
+      {
+        'include': '#block'
+      }
+      {
+        'include': '#strings'
+      }
+      {
+        'match': '\\;'
+        'comment': 'Semicolon can be only at the end of a union'
+        'name': 'punctuation.union-declaration.end.jison'
+      }
+    ]
+  'rules':
+    'patterns': [
+      {
+        'begin': '([a-zA-Z_.\-][a-zA-Z_.\-0-9]*)[ \\t\\n\\r]*(:)'
+        'end': ';'
+        'beginCaptures':
+          '1':
+            'name': 'variable.grammar-rule.token-def.jison'
+            'comment': 'Match the result of the grammar rule'
+          '2':
+            'name': 'punctuation.grammar-rule.result-separator.jison'     # :
+        'endCaptures':
+          '0':
+            'name': 'punctuation.grammar-rule.end.jison'
+        'comment': 'Match grammar rules, second section only'
+        'name': 'meta.grammar-rule.jison'
+        'patterns': [
+          {
+            'include': '#components'
+          }
+        ]
+      }
+    ]
+  'components':
+    'patterns': [
+      {
+        'begin': '(?=([a-zA-Z_.\-][a-zA-Z_.\-0-9]*)?)'  # (?) Comp can be empty
+        'end': '\\||(?=;)'
+        'endCaptures':
+          '0':
+            'name': 'punctuation.grammar-rule.component-separator.jison'  # |
+        'comment': 'Match each component in a grammar rule'
+        'name': 'meta.section.component'
+        'patterns': [
+          {
+            'include': '#comments'
+            'comment': 'Comments can be also inside grammar components'
+          }
+          {
+            'begin': '\''
+            'beginCaptures':
+              '0':
+                'name': 'punctuation.definition.string.begin.jison'
+            'end': '\''
+            'endCaptures':
+              '0':
+                'name': 'punctuation.definition.string.end.jison'
+            'comment': 'Match single character tokens inside components'
+            'name': 'string.quoted.single.character-token.jison'
+            'patterns': [
+              #TODO {
+              #  'include': '#string_escaped_char'
+              #}
+              # {
+              #  'include': '#line_continuation_character'
+              #}
+            ]
+          }
+          {
+            'include': '#directives'
+          }
+          {
+            'include': '#symbols'
+          }
+          {
+            'include': '#actions'
+          }
+        ]
+      }
+    ]
+  'directives':
+    'patterns': [
+      {
+        'match': '%[a-z\-]+'
+        'comment': 'Match %-directives'
+        'name': 'keyword.control.directive.jison'
+      }
+    ]
+  'symbols':
+    'patterns': [
+      {
+        'match': '[a-zA-Z_.\-][a-zA-Z_.\-0-9]*'
+        'comment': 'Match valid symbols'
+        'name': 'variable.grammar-rule.token-type.jison'
+      }
+    ]
+  'types':
+    'patterns': [
+      {
+        'begin': '<'
+        'end': '>'
+        'beginCaptures':
+          '0':
+            'name': 'punctuation.type-declaration.begin.jison'
+        'endCaptures':
+          '0':
+            'name': 'punctuation.type-declaration.end.jison'
+        'comment': 'Match type declarations'
+        'patterns': [
+          {
+            'match': '[$a-zA-Z\_][$a-zA-Z0-9\_]*'
+            'comment': 'A valid JS identifier'
+          }
+        ]
+      }
+    ]
+  'actions':
+    'patterns': [
+      {
+        'begin': '\\{'
+        'beginCaptures':
+          '0':
+            'name': 'punctuation.action.begin.jison'
+        'end': '\\}'
+        'endCaptures':
+          '0':
+            'name': 'punctuation.action.end.jison'
+        'name': 'meta.action.jison'
+        'comment': 'Match action blocks associated with grammar rules'
+        'patterns': [
+          # TODO: Patterns for $-variable go here, or inside block_innards
+          {
+            'include': 'source.js'
+          }
+          {
+            'match': '\\$[$a-zA-Z\_][$a-zA-Z0-9\_]*',
+            'name': 'variable.interpolation.grammar-rule.jison',
+            'comment': 'A grammar rule variable reference.'
+          }
+        ]
+      }
+    ]
+  'comments':
+    'patterns': [
+      {
+        'name': 'comment.line.double-slash.jison'
+        'match': '//.*$'
+      }
+      {
+        'contentName': 'comment.block.jison'
+        'begin': '/\\*'
+        'end': '\\*/'
+        'captures':
+          '0':
+            'name': 'punctuation.definition.comment.jison'
+      }
+    ]
+  'numbers':
+    'patterns': [
+      {
+        'match': '\\b((0(x|X)[0-9a-fA-F]*)|(([0-9]+\\.?[0-9]*)|(\\.[0-9]+))((e|E)(\\+|-)?[0-9]+)?)(L|l|UL|ul|u|U|F|f|ll|LL|ull|ULL)?\\b'
+        'name': 'constant.numeric.c'
+      }
+    ]
+  'block':
+    'patterns': [
+      {
+        'begin': '\\{'
+        'beginCaptures':
+          '0':
+            'name': 'punctuation.section.block.begin.c'
+        'end': '\\}|(?=\\s*#\\s*endif\\b)'
+        'endCaptures':
+          '0':
+            'name': 'punctuation.section.block.end.c'
+        'name': 'meta.block.c'
+        'patterns': [
+          {
+            'include': 'source.js'
+          }
+        ]
+      }
+    ]
