@@ -43,38 +43,38 @@ patterns: [
 
 repository:
   declarations_section:
-        patterns: [
-          {
-            include: "#prologue"
-          }
-          {
-            include: "#declarations"
-          }
-          {
-            include: "#comments"
-            comment: "jison supports Javascript comments"
-          }
-        ]
+    patterns: [
+      {
+        include: "#prologue"
+      }
+      {
+        include: "#declarations"
+      }
+      {
+        include: "#comments"
+        comment: "jison supports Javascript comments"
+      }
+    ]
 
   rules_section:
-        patterns: [
-          {
-            include: "#comments"
-            comment: "jison supports C/C++ comments"
-          }
-          {include: "#actions"}
-          {
-            include: "#rules"
-          }
-        ]
+    patterns: [
+      {
+        include: "#comments"
+        comment: "jison supports C/C++ comments"
+      }
+      {include: "#actions"}
+      {
+        include: "#rules"
+      }
+    ]
 
   epilogue_section:
-        patterns: [
-          {
-            include: "source.js"
-            comment: "Epilogue contains Javascript code only"
-          }
-        ]
+    patterns: [
+      {
+        include: "source.js"
+        comment: "Epilogue contains Javascript code only"
+      }
+    ]
 
 
   prologue:
