@@ -45,8 +45,12 @@ repository:
   declarations_section:
     patterns: [
       {
-        include: "#prologue"
+        name:  "meta.section.prologue.jison"
+        begin: "(?=%\\{)"
+        end:   "(?<=%\\})"
+        patterns: [include: "#user_code_blocks"]
       }
+
       {
         include: "#declarations"
       }
@@ -77,22 +81,6 @@ repository:
     ]
 
 
-  prologue:
-    patterns: [
-      begin: "%{"
-      end: "%}"
-      comment: "Match the prologues, first section only"
-      name: "meta.section.prologue.jison"
-      captures:
-        0:
-          name: "meta.separator.prologue.jison" # Match %{ and %} symbols
-      patterns: [
-        {
-          include: "source.js"
-          comment: "Prologues contain Javascript code only"
-        }
-      ]
-    ]
   declarations:
     patterns: [
       {
