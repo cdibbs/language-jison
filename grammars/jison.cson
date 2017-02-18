@@ -1,8 +1,8 @@
+"name": "Jison"
 scopeName: "source.jison"
 fileTypes: [
   "jison"
 ]
-name: "Jison"
 patterns: [
   {
     begin: "^(%%)$"                             # Has to be the first pattern

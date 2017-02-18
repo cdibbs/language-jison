@@ -1,8 +1,8 @@
+"name": "Jison Lex"
 scopeName: "source.jisonlex"
 fileTypes: [
   "jisonlex"
 ]
-name: "Jison Lex"
 patterns: [
   {
     begin: "\\A(?!%%$)"
