@@ -188,7 +188,62 @@ repository:
       {include: "#actions"}
       {include: "#include_declarations"}
       {
-        include: "#rules"
+        name:  "meta.grammar-rule.jison"
+        begin: "\\b[\\p{Alpha}_](?:[\\w-]*\\w)?\\b"
+        end:   ";"
+        beginCaptures: 0: name: "variable.grammar-rule.token-def.jison"
+        endCaptures:   0: name: "punctuation.terminator.grammar-rule.jison"
+        patterns: [
+          {include: "#comments"}
+          {
+            name:  "meta.rule-components.jison"
+            begin: ":"
+            end:   "(?=;)"
+            beginCaptures: 0: name: "keyword.operator.rule-components.assignment.jison"
+            patterns: [
+              {include: "#comments"}
+              {include: "#quoted_strings"}
+              {
+                match: "(\\[)([\\p{Alpha}_](?:[\\w-]*\\w)?)(\\])"
+                captures:
+                  1: name: "punctuation.definition.named-reference.begin.jison"
+                  2: name: "entity.name.other.reference.jison"
+                  3: name: "punctuation.definition.named-reference.end.jison"
+              },{
+                name:  "meta.prec.jison"
+                begin: "(%(prec))\\s*"
+                end:   "(?<=['\"])|(?=\\s)"
+                beginCaptures: 1: name: "keyword.other.$2.jison"
+                patterns: [
+                  {include: "#comments"}
+                  {include: "#quoted_strings"}
+                  {
+                    name:  "constant.other.token.jison"
+                    begin: "(?=\\S)"
+                    end:   "(?=\\s)"
+                  }
+                ]
+              },{
+                name:  "keyword.operator.rule-components.separator.jison"
+                match: "\\|"
+              },{
+                name:  "keyword.other.$0.jison"
+                match: "\\berror\\b"
+              },{
+                # In addition to Bison’s %empty
+                # (https://www.gnu.org/software/bison/manual/html_node/Empty-Rules.html),
+                # GerHobbelt Jison supports %epsilon, ε (U+03B5 GREEK SMALL
+                # LETTER EPSILON), and these variants of the epsilon character:
+                # Ɛ U+0190 LATIN CAPITAL LETTER OPEN E
+                # ɛ U+0250 LATIN SMALL LETTER OPEN E
+                # ϵ U+03F5 GREEK LUNATE EPSILON SYMBOL
+                name:  "keyword.other.empty.jison"
+                match: "(?:%(?:e(?:mpty|psilon))|\\b[\u0190\u025B\u03B5\u03F5])\\b"
+              }
+              {include: "#rule_actions"}
+            ]
+          }
+        ]
       }
     ]
 
@@ -198,111 +253,6 @@ repository:
       {include: "source.js"}
     ]
 
-
-  rules:
-    patterns: [
-      {
-        begin: "([a-zA-Z_.\-][a-zA-Z_.\-0-9]*)[ \\t\\n\\r]*(:)"
-        end: ";"
-        beginCaptures:
-          1:
-            name: "variable.grammar-rule.token-def.jison"
-            comment: "Match the result of the grammar rule"
-          2:
-            name: "punctuation.grammar-rule.result-separator.jison"     # :
-        endCaptures:
-          0:
-            name: "punctuation.grammar-rule.end.jison"
-        comment: "Match grammar rules, second section only"
-        name: "meta.grammar-rule.jison"
-        patterns: [
-          {include: "#comments"}
-          {
-            include: "#components"
-          }
-        ]
-      }
-    ]
-  components:
-    patterns: [
-      {
-        begin: "(?=([a-zA-Z_.\-][a-zA-Z_.\-0-9]*)?)"  # (?) Comp can be empty
-        end: "\\||(?=;)"
-        endCaptures:
-          0:
-            name: "punctuation.grammar-rule.component-separator.jison"  # |
-        comment: "Match each component in a grammar rule"
-        name: "meta.section.component.jison"
-        patterns: [
-          {include: "#comments"}
-          {
-            begin: "'"
-            beginCaptures:
-              0:
-                name: "punctuation.definition.string.begin.jison"
-            end: "'"
-            endCaptures:
-              0:
-                name: "punctuation.definition.string.end.jison"
-            comment: "Match single character tokens inside components"
-            name: "string.quoted.single.character-token.jison"
-            patterns: [
-              #TODO {
-              #  include: "#string_escaped_char"
-              #}
-              # {
-              #  include: "#line_continuation_character"
-              #}
-            ]
-          }
-          {
-            include: "#directives"
-          }
-          {
-            include: "#symbols"
-          }
-          {
-            include: "#rule_actions"
-          }
-        ]
-      }
-    ]
-  directives:
-    patterns: [
-      {
-        match: "%[a-z\-]+"
-        comment: "Match %-directives"
-        name: "keyword.control.directive.jison"
-      }
-    ]
-  symbols:
-    patterns: [
-      {
-        match: "[a-zA-Z_.\-][a-zA-Z_.\-0-9]*"
-        comment: "Match valid symbols"
-        name: "variable.grammar-rule.token-type.jison"
-      }
-    ]
-  types:
-    patterns: [
-      {
-        begin: "<"
-        end: ">"
-        beginCaptures:
-          0:
-            name: "punctuation.type-declaration.begin.jison"
-        endCaptures:
-          0:
-            name: "punctuation.type-declaration.end.jison"
-        comment: "Match type declarations"
-        patterns: [
-          {
-            match: "[$a-zA-Z\_][$a-zA-Z0-9\_]*"
-            comment: "A valid JS identifier"
-          }
-        ]
-      }
-    ]
 
   actions:
     patterns: [
@@ -452,26 +402,6 @@ repository:
         begin: "'"
         end:   "'"
         patterns: [include: "source.js#string_escapes"]
-      }
-    ]
-
-  block:
-    patterns: [
-      {
-        begin: "\\{"
-        beginCaptures:
-          0:
-            name: "punctuation.section.block.begin.c"
-        end: "\\}|(?=\\s*#\\s*endif\\b)"
-        endCaptures:
-          0:
-            name: "punctuation.section.block.end.c"
-        name: "meta.block.c"
-        patterns: [
-          {
-            include: "source.js"
-          }
-        ]
       }
     ]
 
