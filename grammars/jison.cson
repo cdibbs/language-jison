@@ -1,22 +1,29 @@
 "name": "Jison"
 scopeName: "source.jison"
-fileTypes: [
-  "jison"
-]
+fileTypes: ["jison"]
+
 patterns: [
   {
-    begin: "^(%%)$"                             # Has to be the first pattern
-    comment: "Match from first %% symbol to EOF"
-    captures:
-      0:
-        name: "meta.separator.section.jison"    # Match first %% symbol
+    # Like Bison
+    # (https://www.gnu.org/software/bison/manual/html_node/Grammar-Outline.html),
+    # Jison files are divided into four sections:
+    #   %{
+    #     Prologue
+    #   %}
+    #   Declarations
+    #   %%
+    #   Grammar rules
+    #   %%
+    #   Epilogue
+    # Because there can be more than one prologue, another way to look at Jison
+    # files is that they’re divided into three sections separated by %%, just
+    # like Jison Lex files.
+    begin: "%%"
+    beginCaptures: 0: name: "meta.separator.section.jison"
     patterns: [
       {
-        begin: "^(%%)$"                         # Has to be the first pattern
-        comment: "Match from second %% symbol to EOF"
-        captures:
-          0:
-            name: "meta.separator.section.jison"# Match second %% symbol
+        begin: "%%"
+        beginCaptures: 0: name: "meta.separator.section.jison"
         patterns: [
           {
             name:  "meta.section.epilogue.jison"
@@ -24,22 +31,21 @@ patterns: [
             patterns: [include: "#epilogue_section"]
           }
         ]
-      }
-      {
+      },{
         name:  "meta.section.rules.jison"
         begin: "(?!%%)"
         end:   "(?=%%)"
         patterns: [include: "#rules_section"]
       }
     ]
-  }
-  {
+  },{
     name:  "meta.section.declarations.jison"
     begin: "(?!%%)"
     end:   "(?=%%)"
     patterns: [include: "#declarations_section"]
   }
 ]
+
 
 repository:
   declarations_section:
