@@ -101,7 +101,7 @@ repository:
       begin: "%{"
       end: "%}"
       comment: "Match the prologues, first section only"
-      name: "meta.section.prologue"
+      name: "meta.section.prologue.jison"
       captures:
         0:
           name: "meta.separator.prologue.jison" # Match %{ and %} symbols
@@ -170,7 +170,7 @@ repository:
           0:
             name: "punctuation.grammar-rule.component-separator.jison"  # |
         comment: "Match each component in a grammar rule"
-        name: "meta.section.component"
+        name: "meta.section.component.jison"
         patterns: [
           {
             include: "#comments"
