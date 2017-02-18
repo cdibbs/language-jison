@@ -21,7 +21,7 @@ patterns: [
       {
         begin: "^(?i)([a-z_][a-z0-9_-]*)(?=\\s|$)"
         beginCaptures:
-          "1":
+          1:
             name: "entity.name.function.jisonlex"
         end: "$"
         name: "meta.definition.jisonlex"
@@ -34,7 +34,7 @@ patterns: [
       {
         begin: "^(%[sx])(?=\\s|$)"
         beginCaptures:
-          "1":
+          1:
             name: "punctuation.definition.start-condition.jisonlex"
         end: "$"
         name: "meta.start-condition.jisonlex"
@@ -51,7 +51,7 @@ patterns: [
       {
         begin: "^(%option)\\s(?=\\S)"
         beginCaptures:
-          "1":
+          1:
             name: "keyword.other.option.jisonlex"
         end: "$"
         name: "meta.options.jisonlex"
@@ -78,7 +78,7 @@ patterns: [
   {
     begin: "^(%%)$"
     beginCaptures:
-      "1":
+      1:
         name: "punctuation.separator.sections.jisonlex"
     end: "\\Z.\\A(?# never end)"
     patterns: [
@@ -99,11 +99,11 @@ patterns: [
               {
                 begin: "(?i)^(<(?:(?:[a-z_][a-z0-9_-]*,)*[a-z_][a-z0-9_-]|\\*)>)?(?:(<<EOF>>)(\\s*))?(?=\\S)"
                 beginCaptures:
-                  "1":
+                  1:
                     name: "keyword.other.start-condition.jisonlex"
-                  "2":
+                  2:
                     name: "keyword.operator.eof.jisonlex"
-                  "3":
+                  3:
                     name: "invalid.illegal.regexp.jisonlex"
                 comment: "rule pattern"
                 end: "(?=\\s)|$"
@@ -116,14 +116,14 @@ patterns: [
               {
                 begin: "(%\\{)"
                 beginCaptures:
-                  "1":
+                  1:
                     name: "punctuation.definition.code.jisonlex"
                 comment: "TODO: %} should override embedded scopes"
                 end: "(%\\})(.*)"
                 endCaptures:
-                  "1":
+                  1:
                     name: "punctuation.terminator.code.jisonlex"
-                  "2":
+                  2:
                     name: "invalid.illegal.ignored.jisonlex"
                 patterns: [
                   {
@@ -149,7 +149,7 @@ patterns: [
       {
         begin: "^(%%)$"
         beginCaptures:
-          "1":
+          1:
             name: "punctuation.separator.sections.jisonlex"
         comment: "third section of the file - user code"
         contentName: "meta.section.user-code.jisonlex"
@@ -216,7 +216,7 @@ repository:
   regexp:
     begin: "\\G(?=\\S)(\\^)?"
     captures:
-      "1":
+      1:
         name: "keyword.control.anchor.regexp.jisonlex"
     end: "(\\$)?(?:(?=\\s)|$)"
     name: "string.regexp.jisonlex"
@@ -233,13 +233,13 @@ repository:
       {
         begin: "(\\[)(\\^)?-?"
         beginCaptures:
-          "1":
+          1:
             name: "punctuation.definition.character-class.set.jisonlex"
-          "2":
+          2:
             name: "keyword.operator.negation.regexp.jisonlex"
         end: "-?(\\])"
         endCaptures:
-          "1":
+          1:
             name: "punctuation.terminator.character-class.set.jisonlex"
         name: "constant.other.character-class.set.jisonlex"
         patterns: [
@@ -248,7 +248,7 @@ repository:
           }
           {
             captures:
-              "1":
+              1:
                 name: "invalid.illegal.regexp.jisonlex"
             match: "\\[:(?:(?:alnum|alpha|blank|cntrl|x?digit|graph|lower|print|punct|space|upper)|(.*?)):\\]"
             name: "constant.other.character-class.set.jisonlex"
@@ -287,7 +287,7 @@ repository:
       {
         begin: "([*+?])(?=[*+?])"
         beginCaptures:
-          "1":
+          1:
             name: "keyword.operator.quantifier.regexp.jisonlex"
         comment: "make ** or +? or other combinations illegal"
         end: "(?=[^*+?])"
@@ -310,11 +310,11 @@ repository:
       {
         begin: "(\\()"
         beginCaptures:
-          "1":
+          1:
             name: "punctuation.definition.group.regexp.jisonlex"
         end: "(\\))|(?=\\s)|$(?#end on whitespace because regex does)"
         endCaptures:
-          "1":
+          1:
             name: "punctuation.terminator.group.regexp.jisonlex"
         name: "meta.group.regexp.jisonlex"
         patterns: [
@@ -330,7 +330,7 @@ repository:
       {
         begin: "(/)"
         beginCaptures:
-          "1":
+          1:
             name: "keyword.operator.trailing-match.regexp.jisonlex"
         comment: "detection of multiple trailing contexts"
         end: "(?=\\s)|$"
