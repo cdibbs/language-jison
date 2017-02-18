@@ -203,7 +203,7 @@ repository:
             include: "#symbols"
           }
           {
-            include: "#actions"
+            include: "#rule_actions"
           }
         ]
       }
@@ -244,32 +244,37 @@ repository:
         ]
       }
     ]
-  actions:
+
+  rule_actions:
     patterns: [
       {
-        begin: "\\{"
-        beginCaptures:
-          0:
-            name: "punctuation.action.begin.jison"
-        end: "\\}"
-        endCaptures:
-          0:
-            name: "punctuation.action.end.jison"
         name: "meta.action.jison"
-        comment: "Match action blocks associated with grammar rules"
-        patterns: [
-          # TODO: Patterns for $-variable go here, or inside block_innards
-          {
-            include: "source.js"
-          }
-          {
-            match: "\\$[$a-zA-Z\_][$a-zA-Z0-9\_]*",
-            name: "variable.interpolation.grammar-rule.jison",
-            comment: "A grammar rule variable reference."
-          }
-        ]
+        begin: "\\{"
+        end:   "\\}"
+        beginCaptures: 0: name: "punctuation.definition.action.begin.jison"
+        endCaptures:   0: name: "punctuation.definition.action.end.jison"
+        patterns: [include: "source.js"]
+      }
+      {
+        name:  "meta.action.jison"
+        begin: "->"
+        end:   "((//).*)?(?=$)"
+        beginCaptures:
+          0: name: "punctuation.definition.action.arrow.jison"
+        endCaptures:
+          1: name: "comment.line.double-slash.js"
+          2: name: "punctuation.definition.comment.js"
+        # TODO: The end pattern is based on the comment.line.double-slash.js
+        # pattern in
+        # https://github.com/atom/language-javascript/blob/master/grammars/javascript.cson.
+        # The end pattern of comment.line.double-slash.js is itself $, so $
+        # can’t be the end pattern here because it will never be matched. Is
+        # there an end pattern that can be used here that doesn’t duplicate a
+        # JavaScript grammar pattern?
+        patterns: [include: "source.js"]
       }
     ]
+
   comments:
     patterns: [
       {
@@ -309,5 +314,43 @@ repository:
             include: "source.js"
           }
         ]
+      }
+    ]
+
+
+# These are from https://github.com/GerHobbelt/jison/blob/master/lib/jison.js.
+injections:
+  "L:meta.action.jison -(comment | string), source.js.embedded.source":
+    patterns: [
+      {
+        name:  "variable.language.semantic-value.jison"
+        match: "\\${2}"
+      },{
+        name:  "variable.language.result-location.jison"
+        match: "@\\$"
+      },{
+        name:  "variable.language.stack-index-0.jison"
+        match: "##\\$|\\byysp\\b"
+      },{
+        name:  "support.variable.token-reference.jison"
+        match: "#\\S+#"
+      },{
+        name:  "variable.language.result-id.jison"
+        match: "#\\$"
+      },{
+        name:  "support.variable.token-value.jison"
+        match: "\\$(?:-?\\d+|[\\p{Alpha}_](?:[\\w-]*\\w)?)"
+      },{
+        name:  "support.variable.token-location.jison"
+        match: "@(?:-?\\d+|[\\p{Alpha}_](?:[\\w-]*\\w)?)"
+      },{
+        name:  "support.variable.stack-index.jison"
+        match: "##(?:-?\\d+|[\\p{Alpha}_](?:[\\w-]*\\w)?)"
+      },{
+        name:  "support.variable.token-id.jison"
+        match: "#(?:-?\\d+|[\\p{Alpha}_](?:[\\w-]*\\w)?)"
+      },{
+        name:  "keyword.other.jison"
+        match: "\\byy(?:clearin|erro[kr])\\b"
       }
     ]
