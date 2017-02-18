@@ -15,7 +15,7 @@ patterns: [
     begin: "^(%%)$"
     beginCaptures:
       1:
-        name: "punctuation.separator.sections.jisonlex"
+        name: "meta.separator.section.jisonlex"
     end: "\\Z.\\A(?# never end)"
     patterns: [
       {
@@ -29,7 +29,7 @@ patterns: [
         begin: "^(%%)$"
         beginCaptures:
           1:
-            name: "punctuation.separator.sections.jisonlex"
+            name: "meta.separator.section.jisonlex"
         comment: "third section of the file - user code"
         contentName: "meta.section.user-code.jisonlex"
         end: "\\Z.\\A(?# never end)"
