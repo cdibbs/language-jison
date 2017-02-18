@@ -52,6 +52,59 @@ repository:
     patterns: [
       {include: "#comments"}
 
+      # Jison declarations sections can have lexers embedded between %lex and
+      # /lex.
+      {
+        begin: "^\\s*(%lex)\\s*$"
+        end:   "^\\s*(/lex)\\b"
+        # There may be a better choice of scope than “entity.name.tag”, but
+        # using a tag scope makes the start and end matches stand out. Also, the
+        # end match “/lex” is somewhat like an end tag.
+        beginCaptures: 1: name: "entity.name.tag.lexer.begin.jison"
+        endCaptures:   1: name: "entity.name.tag.lexer.end.jison"
+        # Simply setting the patterns object to {include: "source.jisonlex"}
+        # here doesn’t work for several reasons:
+        # - The Jison Lex grammar’s rules section treats /lex as a valid regex
+        #   pattern; /lex is the same as (?=lex).
+        # - The user-code section treats /lex as a division operator followed by
+        #   the identifier “lex”.
+        # - The user-code section also does not end.
+        # This is the Jison Lex grammar with end patterns that circumvent these
+        # issues.
+        patterns: [
+          {
+            begin: "%%"
+            end:   "(?=/lex)"
+            beginCaptures: 0: name: "meta.separator.section.jisonlex"
+            patterns: [
+              {
+                begin: "^%%"
+                end:   "(?=/lex)"
+                beginCaptures: 0: name: "meta.separator.section.jisonlex"
+                patterns: [
+                  {
+                    name:  "meta.section.user-code.jisonlex"
+                    begin: "(?!%%)"
+                    end:   "(?=/lex)"
+                    patterns: [include: "source.jisonlex#user_code_section"]
+                  }
+                ]
+              },{
+                name:  "meta.section.rules.jisonlex"
+                begin: "(?!%%)"
+                end:   "(?=^(?:%%|/lex))"
+                patterns: [include: "source.jisonlex#rules_section"]
+              }
+            ]
+          },{
+            name:  "meta.section.definitions.jisonlex"
+            begin: "(?!%%)"
+            end:   "(?=%%|/lex)"
+            patterns: [include: "source.jisonlex#definitions_section"]
+          }
+        ]
+      }
+
       {
         name:  "meta.section.prologue.jison"
         begin: "(?=%\\{)"
