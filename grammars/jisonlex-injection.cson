@@ -1,0 +1,28 @@
+"name": "Jison Lex Injection"
+scopeName: "source.jisonlex-injection"
+
+# Jison Lex replaces certain strings that start with “yy”:
+#
+# This string | is replaced with
+# ------------|-----------------
+# yyleng      | yy_.yyleng
+# yylineno    | yy_.yylineno
+# yylloc      | yy_.yylloc
+# yytext      | yy_.yytext
+#
+# This replacement even occurs in comments and JavaScript strings, but it seems
+# unnecessary to highlight these strings in comments. Replacing
+#   "L:meta.rule.action.jisonlex -comment"
+# with
+#   "L:meta.rule.action.jisonlex -(comment | string), source.js.embedded.source"
+# will eliminate highlighting in strings, but something like
+#  `${"yytext"}`
+# will still not be highlighted correctly. The L: prefix makes sure that things
+# like the “yylloc” in “yylloc.first_line”.
+injectionSelector: "L:meta.rule.action.jisonlex -comment"
+patterns: [
+  {
+    name:  "variable.language.jisonlex"
+    match: "\\byy(?:l(?:eng|ineno|loc)|text)\\b"
+  }
+]

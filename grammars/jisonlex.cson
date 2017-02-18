@@ -124,9 +124,7 @@ repository:
             end: "$"
             name: "meta.rule.action.jisonlex"
             patterns: [
-              {
-                include: "#jssource"
-              }
+              {include: "source.js"}
             ]
           }
         ]
@@ -135,37 +133,12 @@ repository:
 
   user_code_section:
     patterns: [
-      {
-        include: "#jssource"
-      }
-    ]
-
-
-  jssource:
-    patterns: [
-      {
-        match: "\\b(?:ECHO|BEGIN|REJECT|YY_FLUSH_BUFFER|YY_BREAK|yy(?:more|less|unput|input|terminate|text|leng|restart|_(?:push|pop|top)_state|_(?:create|switch_to|flush|delete)_buffer|_scan_(?:string|bytes|buffer)|_set_(?:bol|interactive))(?=\\(|$))\\b"
-        name: "support.function.js.jisonlex"
-      }
-      {
-        include: "source.js"
-      }
+      {include: "source.js"}
     ]
 
   re_escape:
     match: "\\\\(?i:[0-9]{1,3}|x[0-9a-f]{1,2}|.)"
     name: "constant.character.escape.jisonlex"
-  rec_csource:
-    begin: "\\{"
-    end: "\\}"
-    patterns: [
-      {
-        include: "source.js"
-      }
-      {
-        include: "#jssource"
-      }
-    ]
   regexp:
     begin: "\\G(?=\\S)(\\^)?"
     captures:
