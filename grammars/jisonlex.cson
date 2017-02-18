@@ -1,41 +1,46 @@
 "name": "Jison Lex"
 scopeName: "source.jisonlex"
-fileTypes: [
-  "jisonlex"
-]
+fileTypes: ["jisonlex"]
+
 patterns: [
   {
-    begin: "\\A(?!%%$)"
-    comment: "first section of the file - definitions"
-    end: "^(?=%%$)"
-    name: "meta.section.definitions.jisonlex"
-    patterns: [include: "#definitions_section"]
-  }
-  {
-    begin: "^(%%)$"
-    beginCaptures:
-      1:
-        name: "meta.separator.section.jisonlex"
-    end: "\\Z.\\A(?# never end)"
+    # Like Flex (https://westes.github.io/flex/manual/Format.html), Jison Lex
+    # files are divided into three sections separated by %%:
+    #   definitions
+    #   %%
+    #   rules
+    #   %%
+    #   user code
+    # Flex has the additional requirement that the %% must be the only thing in
+    # a line, but that’s not the case for the separator between definitions and
+    # rules in Jison Lex.
+    begin: "%%"
+    beginCaptures: 0: name: "meta.separator.section.jisonlex"
     patterns: [
       {
-        begin: "^(?!%%$)"
-        comment: "second section of the file - rules"
-        end: "^(?=%%$)"
-        name: "meta.section.rules.jisonlex"
+        # The separator between rules and user code in Jison Lex must be at the
+        # beginning of a line.
+        begin: "^%%"
+        beginCaptures: 0: name: "meta.separator.section.jisonlex"
+        patterns: [
+          {
+            name:  "meta.section.user-code.jisonlex"
+            begin: "(?!%%)"
+            patterns: [include: "#user_code_section"]
+          }
+        ]
+      },{
+        name:  "meta.section.rules.jisonlex"
+        begin: "(?!%%)"
+        end:   "(?=^%%)"
         patterns: [include: "#rules_section"]
       }
-      {
-        begin: "^(%%)$"
-        beginCaptures:
-          1:
-            name: "meta.separator.section.jisonlex"
-        comment: "third section of the file - user code"
-        contentName: "meta.section.user-code.jisonlex"
-        end: "\\Z.\\A(?# never end)"
-        patterns: [include: "#user_code_section"]
-      }
     ]
+  },{
+    name:  "meta.section.definitions.jisonlex"
+    begin: "(?!%%)"
+    end:   "(?=%%)"
+    patterns: [include: "#definitions_section"]
   }
 ]
 
