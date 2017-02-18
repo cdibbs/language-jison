@@ -9,6 +9,38 @@ patterns: [
     comment: "first section of the file - definitions"
     end: "^(?=%%$)"
     name: "meta.section.definitions.jisonlex"
+    patterns: [include: "#definitions_section"]
+  }
+  {
+    begin: "^(%%)$"
+    beginCaptures:
+      1:
+        name: "punctuation.separator.sections.jisonlex"
+    end: "\\Z.\\A(?# never end)"
+    patterns: [
+      {
+        begin: "^(?!%%$)"
+        comment: "second section of the file - rules"
+        end: "^(?=%%$)"
+        name: "meta.section.rules.jisonlex"
+        patterns: [include: "#rules_section"]
+      }
+      {
+        begin: "^(%%)$"
+        beginCaptures:
+          1:
+            name: "punctuation.separator.sections.jisonlex"
+        comment: "third section of the file - user code"
+        contentName: "meta.section.user-code.jisonlex"
+        end: "\\Z.\\A(?# never end)"
+        patterns: [include: "#user_code_section"]
+      }
+    ]
+  }
+]
+
+repository:
+  definitions_section:
     patterns: [
       {
         include: "#includes"
@@ -74,96 +106,75 @@ patterns: [
         ]
       }
     ]
-  }
-  {
-    begin: "^(%%)$"
-    beginCaptures:
-      1:
-        name: "punctuation.separator.sections.jisonlex"
-    end: "\\Z.\\A(?# never end)"
+
+  rules_section:
     patterns: [
       {
-        begin: "^(?!%%$)"
-        comment: "second section of the file - rules"
-        end: "^(?=%%$)"
-        name: "meta.section.rules.jisonlex"
+        begin: "^(?!$)"
+        end: "$"
+        name: "meta.rule.jisonlex"
         patterns: [
           {
-            begin: "^(?!$)"
-            end: "$"
-            name: "meta.rule.jisonlex"
+            include: "#includes"
+          }
+          {
+            begin: "(?i)^(<(?:(?:[a-z_][a-z0-9_-]*,)*[a-z_][a-z0-9_-]|\\*)>)?(?:(<<EOF>>)(\\s*))?(?=\\S)"
+            beginCaptures:
+              1:
+                name: "keyword.other.start-condition.jisonlex"
+              2:
+                name: "keyword.operator.eof.jisonlex"
+              3:
+                name: "invalid.illegal.regexp.jisonlex"
+            comment: "rule pattern"
+            end: "(?=\\s)|$"
             patterns: [
               {
-                include: "#includes"
+                include: "#regexp"
               }
+            ]
+          }
+          {
+            begin: "(%\\{)"
+            beginCaptures:
+              1:
+                name: "punctuation.definition.code.jisonlex"
+            comment: "TODO: %} should override embedded scopes"
+            end: "(%\\})(.*)"
+            endCaptures:
+              1:
+                name: "punctuation.terminator.code.jisonlex"
+              2:
+                name: "invalid.illegal.ignored.jisonlex"
+            patterns: [
               {
-                begin: "(?i)^(<(?:(?:[a-z_][a-z0-9_-]*,)*[a-z_][a-z0-9_-]|\\*)>)?(?:(<<EOF>>)(\\s*))?(?=\\S)"
-                beginCaptures:
-                  1:
-                    name: "keyword.other.start-condition.jisonlex"
-                  2:
-                    name: "keyword.operator.eof.jisonlex"
-                  3:
-                    name: "invalid.illegal.regexp.jisonlex"
-                comment: "rule pattern"
-                end: "(?=\\s)|$"
-                patterns: [
-                  {
-                    include: "#regexp"
-                  }
-                ]
+                include: "#jssource"
               }
+            ]
+          }
+          {
+            begin: "(?=\\S)"
+            comment: "TODO: eol should override embedded scopes"
+            end: "$"
+            name: "meta.rule.action.jisonlex"
+            patterns: [
               {
-                begin: "(%\\{)"
-                beginCaptures:
-                  1:
-                    name: "punctuation.definition.code.jisonlex"
-                comment: "TODO: %} should override embedded scopes"
-                end: "(%\\})(.*)"
-                endCaptures:
-                  1:
-                    name: "punctuation.terminator.code.jisonlex"
-                  2:
-                    name: "invalid.illegal.ignored.jisonlex"
-                patterns: [
-                  {
-                    include: "#jssource"
-                  }
-                ]
-              }
-              {
-                begin: "(?=\\S)"
-                comment: "TODO: eol should override embedded scopes"
-                end: "$"
-                name: "meta.rule.action.jisonlex"
-                patterns: [
-                  {
-                    include: "#jssource"
-                  }
-                ]
+                include: "#jssource"
               }
             ]
           }
         ]
       }
+    ]
+
+  user_code_section:
+    patterns: [
       {
-        begin: "^(%%)$"
-        beginCaptures:
-          1:
-            name: "punctuation.separator.sections.jisonlex"
-        comment: "third section of the file - user code"
-        contentName: "meta.section.user-code.jisonlex"
-        end: "\\Z.\\A(?# never end)"
-        patterns: [
-          {
-            include: "#jssource"
-          }
-        ]
+        include: "#jssource"
       }
     ]
-  }
-]
-repository:
+
+
   jssource:
     patterns: [
       {
