@@ -199,11 +199,11 @@ repository:
       {include: "#actions"}
       {include: "#include_declarations"}
       {
-        name:  "meta.grammar-rule.jison"
+        name:  "meta.rule.jison"
         begin: "\\b[\\p{Alpha}_](?:[\\w-]*\\w)?\\b"
         end:   ";"
-        beginCaptures: 0: name: "variable.grammar-rule.token-def.jison"
-        endCaptures:   0: name: "punctuation.terminator.grammar-rule.jison"
+        beginCaptures: 0: name: "entity.name.constant.rule-result.jison"
+        endCaptures:   0: name: "punctuation.terminator.rule.jison"
         patterns: [
           {include: "#comments"}
           {
