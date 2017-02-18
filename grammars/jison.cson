@@ -44,6 +44,8 @@ patterns: [
 repository:
   declarations_section:
     patterns: [
+      {include: "#comments"}
+
       {
         name:  "meta.section.prologue.jison"
         begin: "(?=%\\{)"
@@ -54,18 +56,11 @@ repository:
       {
         include: "#declarations"
       }
-      {
-        include: "#comments"
-        comment: "jison supports Javascript comments"
-      }
     ]
 
   rules_section:
     patterns: [
-      {
-        include: "#comments"
-        comment: "jison supports C/C++ comments"
-      }
+      {include: "#comments"}
       {include: "#actions"}
       {
         include: "#rules"
@@ -124,6 +119,7 @@ repository:
         comment: "Match grammar rules, second section only"
         name: "meta.grammar-rule.jison"
         patterns: [
+          {include: "#comments"}
           {
             include: "#components"
           }
@@ -141,10 +137,7 @@ repository:
         comment: "Match each component in a grammar rule"
         name: "meta.section.component.jison"
         patterns: [
-          {
-            include: "#comments"
-            comment: "Comments can be also inside grammar components"
-          }
+          {include: "#comments"}
           {
             begin: "'"
             beginCaptures:
@@ -264,18 +257,19 @@ repository:
   comments:
     patterns: [
       {
-        name: "comment.line.double-slash.jison"
-        match: "//.*$"
-      }
-      {
-        contentName: "comment.block.jison"
+        name:  "comment.line.double-slash.jison"
+        begin: "//"
+        end:   "(?=\\n)"
+        beginCaptures: 0: name: "punctuation.definition.comment.jison"
+      },{
+        name:  "comment.block.jison"
         begin: "/\\*"
-        end: "\\*/"
-        captures:
-          0:
-            name: "punctuation.definition.comment.jison"
+        end:   "\\*/"
+        beginCaptures: 0: name: "punctuation.definition.comment.begin.jison"
+        endCaptures:   0: name: "punctuation.definition.comment.end.jison"
       }
     ]
+
   numbers:
     patterns: [
       {

@@ -47,11 +47,8 @@ patterns: [
 repository:
   definitions_section:
     patterns: [
-      {
-        begin: "/\\*"
-        end: "\\*/|$"
-        name: "comment.block.js.jisonlex"
-      }
+      {include: "source.jison#comments"}
+
       {
         begin: "^(?i)([a-z_][a-z0-9_-]*)(?=\\s|$)"
         beginCaptures:
@@ -60,6 +57,7 @@ repository:
         end: "$"
         name: "meta.definition.jisonlex"
         patterns: [
+          {include: "source.jison#comments"}
           {
             include: "#regexp"
           }
@@ -73,6 +71,7 @@ repository:
         end: "$"
         name: "meta.start-condition.jisonlex"
         patterns: [
+          {include: "source.jison#comments"}
           {
             match: "(?i)[a-z_][a-z0-9_-]*"
           }
@@ -112,6 +111,7 @@ repository:
 
   rules_section:
     patterns: [
+      {include: "source.jison#comments"}
       {
         begin: "^(?!$)"
         end: "$"
