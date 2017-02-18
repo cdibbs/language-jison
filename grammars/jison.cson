@@ -112,17 +112,81 @@ repository:
         patterns: [include: "#user_code_blocks"]
       }
 
+      # These declarations are supported by the original Jison.
       {include: "#options_declarations"}
+      {
+        name:  "keyword.other.declaration.$1.jison"
+        match: "%(ebnf|left|nonassoc|parse-param|right|start)\\b"
+      }
+
+      # These declarations are supported by the GerHobbelt fork.
+      {include: "#include_declarations"}
+      {
+        name:  "meta.code.jison"
+        begin: "%(code)\\b"
+        end:   "$"
+        beginCaptures: 0: name: "keyword.other.declaration.$1.jison"
+        patterns: [
+          # Note that GerHobbelt Jison supports
+          #   %code qualifier {code}
+          # but not Bison’s
+          #   %code {code}
+          # (https://www.gnu.org/software/bison/manual/html_node/_0025code-Summary.html).
+          {include: "#comments"}
+          {include: "#rule_actions"}
+          {
+            # GerHobbelt Jison supports “required”, Bison supports “requires”
+            # (https://www.gnu.org/software/bison/manual/html_node/_0025code-Summary.html).
+            name:  "keyword.other.code-qualifier.$1.jison"
+            match: "(init|required)"
+          }
+          {include: "#quoted_strings"}
+          {
+            name:  "string.unquoted.jison"
+            match: "\\b[\\p{Alpha}_](?:[\\w-]*\\w)?\\b"
+          }
+        ]
+      },{
+        # https://www.gnu.org/software/bison/manual/html_node/Token-Decl.html
+        name:  "meta.token.jison"
+        begin: "%(token)\\b"
+        end:   "$|(%%|;)"
+        beginCaptures: 0: name: "keyword.other.declaration.$1.jison"
+        endCaptures:   1: name: "punctuation.terminator.declaration.token.jison"
+        patterns: [
+          {include: "#comments"}
+          {include: "#numbers"}
+          {include: "#quoted_strings"}
+          {
+            name:  "invalid.unimplemented.jison"
+            match: "<[\\p{Alpha}_](?:[\\w-]*\\w)?>"
+          },{
+            name:  "entity.other.token.jison"
+            match: "\\S+"
+          }
+        ]
+      },{
+        name:  "keyword.other.declaration.$1.jison"
+        match: "%(debug|import|parser-type)\\b"
+      }
 
       {
-        include: "#declarations"
+        name:  "invalid.illegal.jison"
+        match: "%prec\\b"
+      },{
+        name:  "invalid.unimplemented.jison"
+        match: "%[\\p{Alpha}_](?:[\\w-]*\\w)?\\b"
       }
+
+      {include: "#numbers"}
+      {include: "#quoted_strings"}
     ]
 
   rules_section:
     patterns: [
       {include: "#comments"}
       {include: "#actions"}
+      {include: "#include_declarations"}
       {
         include: "#rules"
       }
@@ -130,39 +194,11 @@ repository:
 
   epilogue_section:
     patterns: [
-      {
-        include: "source.js"
-        comment: "Epilogue contains Javascript code only"
-      }
+      {include: "#user_code_include_declarations"}
+      {include: "source.js"}
     ]
 
 
-  declarations:
-    patterns: [
-      {
-        include: "#directives"
-      }
-      {
-        include: "#types"
-      }
-      {
-        include: "#symbols"
-      }
-      {
-        include: "#numbers"
-      }
-      {
-        include: "#block"
-      }
-      {
-        include: "#strings"
-      }
-      {
-        match: "\\;"
-        comment: "Semicolon can be only at the end of a union"
-        name: "punctuation.union-declaration.end.jison"
-      }
-    ]
   rules:
     patterns: [
       {
@@ -295,6 +331,7 @@ repository:
         endCaptures:   0: name: "punctuation.definition.action.end.jison"
         patterns: [include: "source.js"]
       }
+      {include: "#include_declarations"}
       {
         name:  "meta.action.jison"
         begin: "->"
@@ -328,6 +365,41 @@ repository:
         end:   "\\*/"
         beginCaptures: 0: name: "punctuation.definition.comment.begin.jison"
         endCaptures:   0: name: "punctuation.definition.comment.end.jison"
+      }
+    ]
+
+  include_declarations:
+    patterns: [
+      {
+        name:  "meta.include.jison"
+        begin: "(%(include))\\s*"
+        end:   "(?<=['\"])|(?=\\s)"
+        beginCaptures: 1: name: "keyword.other.declaration.$2.jison"
+        patterns: [include: "#include_paths"]
+      }
+    ]
+  user_code_include_declarations:
+    patterns: [
+      {
+        # This is almost identical to the patterns in the include_declarations
+        # object, but an %include must be at the beginning of a line in a user-
+        # code section.
+        name:  "meta.include.jison"
+        begin: "^(%include)\\s*"
+        end:   "(?<=['\"])|(?=\\s)"
+        beginCaptures: 1: name: "keyword.other.include.jison"
+        patterns: [include: "#include_paths"]
+      }
+    ]
+
+  include_paths:
+    patterns: [
+      {include: "#quoted_strings"}
+      {
+        name:  "string.unquoted.jison"
+        begin: "(?=\\S)"
+        end:   "(?=\\s)"
+        patterns: [include: "source.js#string_escapes"]
       }
     ]
 

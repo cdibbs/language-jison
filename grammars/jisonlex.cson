@@ -48,7 +48,7 @@ repository:
   definitions_section:
     patterns: [
       {include: "source.jison#comments"}
-
+      {include: "source.jison#include_declarations"}
       {
         name:  "meta.definition.jisonlex"
         begin: "\\b[\\p{Alpha}_](?:[\\w-]*\\w)?\\b"
@@ -142,6 +142,7 @@ repository:
 
   user_code_section:
     patterns: [
+      {include: "source.jison#user_code_include_declarations"}
       {include: "source.js"}
     ]
 
