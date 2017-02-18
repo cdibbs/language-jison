@@ -19,30 +19,30 @@ patterns: [
             name: "meta.separator.section.jison"# Match second %% symbol
         patterns: [
           {
-            include: "#exceeding_sections"      # Has to be the first pattern
-          }
-          {
-            include: "#third_section"
+            name:  "meta.section.epilogue.jison"
+            begin: "(?!%%)"
+            patterns: [include: "#epilogue_section"]
           }
         ]
       }
       {
-        include: "#second_section"
+        name:  "meta.section.rules.jison"
+        begin: "(?!%%)"
+        end:   "(?=%%)"
+        patterns: [include: "#rules_section"]
       }
     ]
   }
   {
-    include: "#first_section"
+    name:  "meta.section.declarations.jison"
+    begin: "(?!%%)"
+    end:   "(?=%%)"
+    patterns: [include: "#declarations_section"]
   }
 ]
+
 repository:
-  first_section:
-    patterns: [
-      {
-        begin: "(?!^%%$)"
-        end: "(?=^%%$)"
-        comment: "Match the content of the first section"
-        name: "meta.section.declarations.jison"
+  declarations_section:
         patterns: [
           {
             include: "#prologue"
@@ -55,15 +55,8 @@ repository:
             comment: "jison supports Javascript comments"
           }
         ]
-      }
-    ]
-  second_section:
-    patterns: [
-      {
-        begin: "(?!^%%$)"
-        end: "(?=^%%$)"
-        comment: "Match the content of the second section"
-        name: "meta.section.rules.jison"
+
+  rules_section:
         patterns: [
           {
             include: "#comments"
@@ -74,29 +67,16 @@ repository:
             include: "#rules"
           }
         ]
-      }
-    ]
-  third_section:
-    patterns: [
-      {
-        begin: "(?!^%%$)"
-        end: "(?=^%%$)"
-        comment: "Match the content of the third section"
-        name: "meta.section.epilogue.jison"
+
+  epilogue_section:
         patterns: [
           {
             include: "source.js"
             comment: "Epilogue contains Javascript code only"
           }
         ]
-      }
-    ]
-  exceeding_sections:
-    patterns: [
-      begin: "^(%%)$"
-      name: "invalid.illegal.exceeding-sections.jison"
-      comment: "Match exceeding sections created by too many %% symbols"
-    ]
+
+
   prologue:
     patterns: [
       begin: "%{"
