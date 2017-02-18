@@ -2,6 +2,10 @@
 scopeName: "source.jisonlex"
 fileTypes: ["jisonlex"]
 
+# This grammar is based on the Jison Lex files from
+# https://github.com/zaach/lex-parser and
+# https://github.com/GerHobbelt/lex-parser.
+
 patterns: [
   {
     # Like Flex (https://westes.github.io/flex/manual/Format.html), Jison Lex
@@ -43,6 +47,7 @@ patterns: [
     patterns: [include: "#definitions_section"]
   }
 ]
+
 
 repository:
   definitions_section:

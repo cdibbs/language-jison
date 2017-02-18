@@ -2,6 +2,17 @@
 scopeName: "source.jison"
 fileTypes: ["jison"]
 
+# This grammar is based on the Jison files from
+# https://github.com/zaach/ebnf-parser and
+# https://github.com/GerHobbelt/ebnf-parser. The original Jison allows
+# identifiers to contain (and end with) hyphens. GerHobbelt Jison makes a
+# distinction between identifiers, which can’t contain hyphens at all, and
+# names, which can contain (but *not* end with) hyphens. As a compromise, this
+# grammar uses
+#   [\p{Alpha}_](?:[\w-]*\w)?
+# to match both identifiers and names. This means that identifiers can contain
+# hyphens, even when they’re not allowed in GerHobbelt Jison.
+
 patterns: [
   {
     # Like Bison
@@ -274,7 +285,7 @@ repository:
     patterns: [
       {include: "#actions"}
       {
-        name: "meta.action.jison"
+        name:  "meta.action.jison"
         begin: "\\{"
         end:   "\\}"
         beginCaptures: 0: name: "punctuation.definition.action.begin.jison"
