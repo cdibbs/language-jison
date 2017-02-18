@@ -42,7 +42,7 @@ repository:
         begin: "(?!^%%$)"
         end: "(?=^%%$)"
         comment: "Match the content of the first section"
-        name: "meta.section.first.jison"
+        name: "meta.section.declarations.jison"
         patterns: [
           {
             include: "#prologue"
@@ -63,7 +63,7 @@ repository:
         begin: "(?!^%%$)"
         end: "(?=^%%$)"
         comment: "Match the content of the second section"
-        name: "meta.section.second.jison"
+        name: "meta.section.rules.jison"
         patterns: [
           {
             include: "#comments"
@@ -82,7 +82,7 @@ repository:
         begin: "(?!^%%$)"
         end: "(?=^%%$)"
         comment: "Match the content of the third section"
-        name: "meta.section.third.jison"
+        name: "meta.section.epilogue.jison"
         patterns: [
           {
             include: "source.js"
