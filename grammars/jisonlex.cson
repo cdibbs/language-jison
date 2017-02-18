@@ -81,30 +81,10 @@ repository:
           }
         ]
       }
+      {include: "source.jison#options_declarations"}
       {
-        begin: "^(%option)\\s(?=\\S)"
-        beginCaptures:
-          1:
-            name: "keyword.other.option.jisonlex"
-        end: "$"
-        name: "meta.options.jisonlex"
-        patterns: [
-          {
-            match: "\\b(?:(?:no)?(?:[78]bit|align|backup|batch|c\\+\\+|debug|default|ecs|fast|full|interactive|lex-compat|meta-ecs|perf-report|read|stdout|verbose|warn|array|pointer|input|unput|yy_(?:(?:push|pop|top)_state|scan_(?:buffer|bytes|string))|main|stack|stdinit|yylineno|yywrap)|(?:case(?:ful|less)|case-(?:in)?sensitive|(?:always|never)-interactive))\\b"
-            name: "support.other.option.jisonlex"
-          }
-        ]
-      }
-      {
-        begin: "^%(?:array|pointer)"
-        end: "$"
-        name: "keyword.other.option.jisonlex"
-        patterns: [
-          {
-            match: "\\S"
-            name: "invalid.illegal.jisonlex"
-          }
-        ]
+        name:  "invalid.unimplemented.jisonlex"
+        match: "%(?:array|pointer)"
       }
       {include: "source.jison#user_code_blocks"}
     ]

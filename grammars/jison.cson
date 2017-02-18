@@ -53,6 +53,8 @@ repository:
         patterns: [include: "#user_code_blocks"]
       }
 
+      {include: "#options_declarations"}
+
       {
         include: "#declarations"
       }
@@ -277,6 +279,51 @@ repository:
         name: "constant.numeric.c"
       }
     ]
+
+  options_declarations:
+    patterns: [
+      {
+        name:  "meta.options.jison"
+        begin: "%options\\b"
+        end:   "$"
+        beginCaptures: 0: name: "keyword.other.options.jison"
+        patterns: [
+          {
+            name:  "entity.name.constant.jison"
+            match: "\\b[\\p{Alpha}_](?:[\\w-]*\\w)?\\b"
+          },{
+            begin: "(=)\\s*"
+            end:   "(?<=['\"])|(?=\\s)"
+            beginCaptures: 1: name: "keyword.operator.option.assignment.jison"
+            patterns: [
+              {include: "quoted_strings"}
+              {
+                name:  "string.unquoted.jison"
+                match: "\\S+"
+              }
+            ]
+          }
+          {include: "quoted_strings"}
+        ]
+      }
+    ]
+
+  quoted_strings:
+    patterns: [
+      {
+        name:  "string.quoted.double.jison"
+        begin: '"'
+        end:   '"'
+        # https://github.com/atom/language-javascript/blob/master/grammars/javascript.cson
+        patterns: [include: "source.js#string_escapes"]
+      },{
+        name:  "string.quoted.single.jison"
+        begin: "'"
+        end:   "'"
+        patterns: [include: "source.js#string_escapes"]
+      }
+    ]
+
   block:
     patterns: [
       {
