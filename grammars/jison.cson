@@ -69,6 +69,7 @@ repository:
             include: "#comments"
             comment: "jison supports C/C++ comments"
           }
+          {include: "#actions"}
           {
             include: "#rules"
           }
@@ -245,8 +246,25 @@ repository:
       }
     ]
 
+  actions:
+    patterns: [
+      {
+        name:  "meta.action.jison"
+        begin: "\\{\\{"
+        end:   "\\}\\}"
+        beginCaptures: 0: name: "punctuation.definition.action.begin.jison"
+        endCaptures:   0: name: "punctuation.definition.action.end.jison"
+        patterns: [include: "source.js"]
+      },{
+        name:  "meta.action.jison"
+        begin: "(?=%\\{)"
+        end:   "(?<=%\\})"
+        patterns: [include: "#user_code_blocks"]
+      }
+    ]
   rule_actions:
     patterns: [
+      {include: "#actions"}
       {
         name: "meta.action.jison"
         begin: "\\{"
@@ -314,6 +332,18 @@ repository:
             include: "source.js"
           }
         ]
+      }
+    ]
+
+  user_code_blocks:
+    patterns: [
+      {
+        name:  "meta.user-code-block.jison"
+        begin: "%\\{"
+        end:   "%\\}"
+        beginCaptures: 0: name: "punctuation.definition.user-code-block.begin.jison"
+        endCaptures:   0: name: "punctuation.definition.user-code-block.end.jison"
+        patterns: [include: "source.js"]
       }
     ]
 
