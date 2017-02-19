@@ -18,7 +18,7 @@ scopeName: "source.jisonlex-injection"
 # will eliminate highlighting in strings, but something like
 #  `${"yytext"}`
 # will still not be highlighted correctly. The L: prefix makes sure that things
-# like the “yylloc” in “yylloc.first_line”.
+# like the “yylloc” in “yylloc.first_line” are highlighted correctly.
 injectionSelector: "L:meta.rule.action.jisonlex -comment"
 patterns: [
   {
