@@ -1,347 +1,282 @@
+"name": "Jison Lex"
 scopeName: "source.jisonlex"
-fileTypes: [
-  "jisonlex"
-]
-name: "Jison Lex"
+fileTypes: ["jisonlex"]
+
+# This grammar is based on the Jison Lex files from
+# https://github.com/zaach/lex-parser and
+# https://github.com/GerHobbelt/lex-parser.
+
 patterns: [
   {
-    begin: "\\A(?!%%$)"
-    comment: "first section of the file - definitions"
-    end: "^(?=%%$)"
-    name: "meta.section.definitions.jisonlex"
+    # Like Flex (https://westes.github.io/flex/manual/Format.html), Jison Lex
+    # files are divided into three sections separated by %%:
+    #   definitions
+    #   %%
+    #   rules
+    #   %%
+    #   user code
+    # Flex has the additional requirement that the %% must be the only thing in
+    # a line, but that’s not the case for the separator between definitions and
+    # rules in Jison Lex.
+    begin: "%%"
+    beginCaptures: 0: name: "meta.separator.section.jisonlex"
     patterns: [
       {
-        include: "#includes"
-      }
-      {
-        begin: "/\\*"
-        end: "\\*/|$"
-        name: "comment.block.js.jisonlex"
-      }
-      {
-        begin: "^(?i)([a-z_][a-z0-9_-]*)(?=\\s|$)"
-        beginCaptures:
-          "1":
-            name: "entity.name.function.jisonlex"
-        end: "$"
-        name: "meta.definition.jisonlex"
+        # The separator between rules and user code in Jison Lex must be at the
+        # beginning of a line.
+        begin: "^%%"
+        beginCaptures: 0: name: "meta.separator.section.jisonlex"
         patterns: [
           {
-            include: "#regexp"
+            name:  "meta.section.user-code.jisonlex"
+            begin: "(?!%%)"
+            patterns: [include: "#user_code_section"]
           }
         ]
-      }
-      {
-        begin: "^(%[sx])(?=\\s|$)"
-        beginCaptures:
-          "1":
-            name: "punctuation.definition.start-condition.jisonlex"
-        end: "$"
-        name: "meta.start-condition.jisonlex"
-        patterns: [
-          {
-            match: "(?i)[a-z_][a-z0-9_-]*"
-          }
-          {
-            match: "\\S"
-            name: "invalid.illegal.jisonlex"
-          }
-        ]
-      }
-      {
-        begin: "^(%option)\\s(?=\\S)"
-        beginCaptures:
-          "1":
-            name: "keyword.other.option.jisonlex"
-        end: "$"
-        name: "meta.options.jisonlex"
-        patterns: [
-          {
-            match: "\\b(?:(?:no)?(?:[78]bit|align|backup|batch|c\\+\\+|debug|default|ecs|fast|full|interactive|lex-compat|meta-ecs|perf-report|read|stdout|verbose|warn|array|pointer|input|unput|yy_(?:(?:push|pop|top)_state|scan_(?:buffer|bytes|string))|main|stack|stdinit|yylineno|yywrap)|(?:case(?:ful|less)|case-(?:in)?sensitive|(?:always|never)-interactive))\\b"
-            name: "support.other.option.jisonlex"
-          }
-        ]
-      }
-      {
-        begin: "^%(?:array|pointer)"
-        end: "$"
-        name: "keyword.other.option.jisonlex"
-        patterns: [
-          {
-            match: "\\S"
-            name: "invalid.illegal.jisonlex"
-          }
-        ]
+      },{
+        name:  "meta.section.rules.jisonlex"
+        begin: "(?!%%)"
+        end:   "(?=^%%)"
+        patterns: [include: "#rules_section"]
       }
     ]
-  }
-  {
-    begin: "^(%%)$"
-    beginCaptures:
-      "1":
-        name: "punctuation.separator.sections.jisonlex"
-    end: "\\Z.\\A(?# never end)"
-    patterns: [
-      {
-        begin: "^(?!%%$)"
-        comment: "second section of the file - rules"
-        end: "^(?=%%$)"
-        name: "meta.section.rules.jisonlex"
-        patterns: [
-          {
-            begin: "^(?!$)"
-            end: "$"
-            name: "meta.rule.jisonlex"
-            patterns: [
-              {
-                include: "#includes"
-              }
-              {
-                begin: "(?i)^(<(?:(?:[a-z_][a-z0-9_-]*,)*[a-z_][a-z0-9_-]|\\*)>)?(?:(<<EOF>>)(\\s*))?(?=\\S)"
-                beginCaptures:
-                  "1":
-                    name: "keyword.other.start-condition.jisonlex"
-                  "2":
-                    name: "keyword.operator.eof.jisonlex"
-                  "3":
-                    name: "invalid.illegal.regexp.jisonlex"
-                comment: "rule pattern"
-                end: "(?=\\s)|$"
-                patterns: [
-                  {
-                    include: "#regexp"
-                  }
-                ]
-              }
-              {
-                begin: "(%\\{)"
-                beginCaptures:
-                  "1":
-                    name: "punctuation.definition.code.jisonlex"
-                comment: "TODO: %} should override embedded scopes"
-                end: "(%\\})(.*)"
-                endCaptures:
-                  "1":
-                    name: "punctuation.terminator.code.jisonlex"
-                  "2":
-                    name: "invalid.illegal.ignored.jisonlex"
-                patterns: [
-                  {
-                    include: "#jssource"
-                  }
-                ]
-              }
-              {
-                begin: "(?=\\S)"
-                comment: "TODO: eol should override embedded scopes"
-                end: "$"
-                name: "meta.rule.action.jisonlex"
-                patterns: [
-                  {
-                    include: "#jssource"
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
-      {
-        begin: "^(%%)$"
-        beginCaptures:
-          "1":
-            name: "punctuation.separator.sections.jisonlex"
-        comment: "third section of the file - user code"
-        contentName: "meta.section.user-code.jisonlex"
-        end: "\\Z.\\A(?# never end)"
-        patterns: [
-          {
-            include: "#jssource"
-          }
-        ]
-      }
-    ]
+  },{
+    name:  "meta.section.definitions.jisonlex"
+    begin: "(?!%%)"
+    end:   "(?=%%)"
+    patterns: [include: "#definitions_section"]
   }
 ]
+
+
 repository:
-  jssource:
+  definitions_section:
     patterns: [
+      {include: "source.jison#comments"}
+      {include: "source.jison#include_declarations"}
       {
-        match: "\\b(?:ECHO|BEGIN|REJECT|YY_FLUSH_BUFFER|YY_BREAK|yy(?:more|less|unput|input|terminate|text|leng|restart|_(?:push|pop|top)_state|_(?:create|switch_to|flush|delete)_buffer|_scan_(?:string|bytes|buffer)|_set_(?:bol|interactive))(?=\\(|$))\\b"
-        name: "support.function.js.jisonlex"
+        name:  "meta.definition.jisonlex"
+        begin: "\\b[\\p{Alpha}_](?:[\\w-]*\\w)?\\b"
+        end:   "$"
+        beginCaptures: 0: name: "entity.name.variable.jisonlex"
+        patterns: [
+          {include: "source.jison#comments"}
+          {
+            name:  "string.regexp.jisonlex"
+            begin: "(?=\\S)"
+            end:   "(?=\\s)"
+            patterns: [include: "#regexp"]
+          }
+        ]
+      },{
+        name:  "meta.start-condition.jisonlex"
+        begin: "%[sx]\\b"
+        end:   "$"
+        beginCaptures: 0: name: "keyword.other.start-condition.jisonlex"
+        patterns: [
+          {include: "source.jison#comments"}
+          {
+            name:  "entity.name.function.jisonlex"
+            match: "\\b[\\p{Alpha}_](?:[\\w-]*\\w)?\\b"
+          },{
+            name:  "invalid.illegal.jisonlex"
+            match: "\\S"
+          }
+        ]
       }
+      {include: "source.jison#options_declarations"}
       {
-        include: "source.js"
+        name:  "invalid.unimplemented.jisonlex"
+        match: "%(?:array|pointer)"
       }
+      {include: "source.jison#user_code_blocks"}
     ]
-  includes:
+
+  rules_section:
     patterns: [
+      {include: "source.jison#comments"}
       {
-        begin: "^%\\{$"
-        comment: "TODO: $} should override the embedded scopes"
-        end: "^%\\}$"
-        name: "meta.embedded.source.js.jisonlex"
+        name:  "meta.start-conditions.jisonlex"
+        begin: "(?:^|(?<=%\\}))<(?!<EOF>>)"
+        end:   ">"
+        beginCaptures: 0: name: "punctuation.definition.start-conditions.begin.jisonlex"
+        endCaptures:   0: name: "punctuation.definition.start-conditions.end.jisonlex"
         patterns: [
           {
-            include: "source.js"
-          }
-        ]
-      }
-      {
-        begin: "^[ \\t]+"
-        comment: "TODO: eol should override the embedded scopes"
-        end: "$"
-        name: "meta.embedded.source.js.jisonlex"
-        patterns: [
-          {
-            include: "source.js"
-          }
-        ]
-      }
-    ]
-  re_escape:
-    match: "\\\\(?i:[0-9]{1,3}|x[0-9a-f]{1,2}|.)"
-    name: "constant.character.escape.jisonlex"
-  rec_csource:
-    begin: "\\{"
-    end: "\\}"
-    patterns: [
-      {
-        include: "source.js"
-      }
-      {
-        include: "#jssource"
-      }
-    ]
-  regexp:
-    begin: "\\G(?=\\S)(\\^)?"
-    captures:
-      "1":
-        name: "keyword.control.anchor.regexp.jisonlex"
-    end: "(\\$)?(?:(?=\\s)|$)"
-    name: "string.regexp.jisonlex"
-    patterns: [
-      {
-        include: "#subregexp"
-      }
-    ]
-  subregexp:
-    patterns: [
-      {
-        include: "#re_escape"
-      }
-      {
-        begin: "(\\[)(\\^)?-?"
-        beginCaptures:
-          "1":
-            name: "punctuation.definition.character-class.set.jisonlex"
-          "2":
-            name: "keyword.operator.negation.regexp.jisonlex"
-        end: "-?(\\])"
-        endCaptures:
-          "1":
-            name: "punctuation.terminator.character-class.set.jisonlex"
-        name: "constant.other.character-class.set.jisonlex"
-        patterns: [
-          {
-            include: "#re_escape"
-          }
-          {
-            captures:
-              "1":
-                name: "invalid.illegal.regexp.jisonlex"
-            match: "\\[:(?:(?:alnum|alpha|blank|cntrl|x?digit|graph|lower|print|punct|space|upper)|(.*?)):\\]"
-            name: "constant.other.character-class.set.jisonlex"
-          }
-        ]
-      }
-      {
-        match: "(?i){[a-z_][a-z0-9_-]*}"
-        name: "variable.other.jisonlex"
-      }
-      {
-        begin: "\\{"
-        end: "\\}"
-        name: "keyword.operator.quantifier.regexp.jisonlex"
-        patterns: [
-          {
-            match: "(?<=\\{)[0-9]*(?:,[0-9]*)?(?=\\})"
-          }
-          {
-            comment: "{3} counts should only have digit[,digit]"
-            match: "[^}]"
-            name: "invalid.illegal.regexp.jisonlex"
-          }
-        ]
-      }
-      {
-        begin: "\""
-        end: "\""
-        name: "string.quoted.double.regexp.jisonlex"
-        patterns: [
-          {
-            include: "#re_escape"
-          }
-        ]
-      }
-      {
-        begin: "([*+?])(?=[*+?])"
-        beginCaptures:
-          "1":
-            name: "keyword.operator.quantifier.regexp.jisonlex"
-        comment: "make ** or +? or other combinations illegal"
-        end: "(?=[^*+?])"
-        patterns: [
-          {
+            name:  "keyword.other.jisonlex"
+            match: "\\bINITIAL\\b"
+          },{
+            name:  "entity.name.function.jisonlex"
+            match: "\\b[\\p{Alpha}_](?:[\\w-]*\\w)?\\b"
+          },{
+            name:  "punctuation.separator.start-condition.jisonlex"
+            match: ","
+          },{
+            name:  "keyword.other.any-start-condition.jisonlex"
+            match: "(?<=<)\\*(?=>)"
+          },{
+            name:  "invalid.illegal.jisonlex"
             match: "."
-            name: "invalid.illegal.regexp.jisonlex"
           }
         ]
-      }
-      {
-        match: "[*+?]"
-        name: "keyword.operator.quantifier.regexp.jisonlex"
-      }
-      {
-        comment: "<<EOF>> is handled in the rule pattern"
-        match: "<<EOF>>"
-        name: "invalid.illegal.regexp.jisonlex"
-      }
-      {
-        begin: "(\\()"
-        beginCaptures:
-          "1":
-            name: "punctuation.definition.group.regexp.jisonlex"
-        end: "(\\))|(?=\\s)|$(?#end on whitespace because regex does)"
+      },{
+        name:  "meta.rule.action.jisonlex"
+        begin: "(?=%\\{)"
+        end:   "(?<=%\\})"
+        patterns: [include: "source.jison#user_code_blocks"]
+      },{
+        name:  "string.regexp.jisonlex"
+        begin: "(?:^|(?<=>|%\\}))(?=\\S)"
+        end:   "(?=\\s|%\\{)"
+        patterns: [include: "#regexp"]
+      },{
+        name:  "meta.rule.action.jisonlex"
+        begin: "(?=\\S)"
+        end:   "((//).*)?(?=$)"
         endCaptures:
-          "1":
-            name: "punctuation.terminator.group.regexp.jisonlex"
-        name: "meta.group.regexp.jisonlex"
+          1: name: "comment.line.double-slash.js"
+          2: name: "punctuation.definition.comment.js"
+        # TODO: See the arrow (->) action in the Jison grammar for what’s going
+        # on with the duplicated JavaScript comment patterns.
         patterns: [
-          {
-            match: "/"
-            name: "invalid.illegal.regexp.jisonlex"
-          }
-          {
-            include: "#subregexp"
-          }
+          {include: "source.jison#include_declarations"}
+          {include: "source.js"}
         ]
       }
+    ]
+
+  user_code_section:
+    patterns: [
+      {include: "source.jison#user_code_include_declarations"}
+      {include: "source.js"}
+    ]
+
+
+  name_uses:
+    patterns: [
       {
-        begin: "(/)"
+        name:  "variable.other.jisonlex"
+        match: "\\{[\\p{Alpha}_](?:[\\w-]*\\w)?\\}"
+      }
+    ]
+
+  # TODO: Can the regexp patterns be replaced with language-regexp
+  # (https://github.com/Alhadis/language-regexp) and some injections?
+  regexp:
+    patterns: [
+      # Comments are allowed in Jison Lex regex patterns.
+      {include: "source.jison#comments"}
+      # These patterns are supported by JavaScript.
+      {
+        name:  "keyword.other.character-class.any.regexp.jisonlex"
+        match: "\\."
+      },{
+        name:  "keyword.other.anchor.word-boundary.regexp.jisonlex"
+        match: "\\\\b"
+      },{
+        name:  "keyword.other.anchor.non-word-boundary.regexp.jisonlex"
+        match: "\\\\B"
+      },{
+        name:  "keyword.other.anchor.start-of-input.regexp.jisonlex"
+        match: "\\^"
+      },{
+        name:  "keyword.other.anchor.end-of-input.regexp.jisonlex"
+        match: "\\$"
+      },{
+        name:  "keyword.other.back-reference.regexp.jisonlex"
+        match: "\\\\[1-9]\\d*"
+      },{
+        name:  "keyword.operator.quantifier.regexp.jisonlex"
+        match: "(?:[+*?]|\\{(?:\\d+(?:,(?:\\d+)?)?|,\\d+)\\})\\??"
+      },{
+        name:  "keyword.operator.alternation.regexp.jisonlex"
+        match: "\\|"
+      },{
+        name:  "meta.non-capturing.group.regexp.jisonlex"
+        begin: "\\(\\?:"
+        end:   "\\)"
+        beginCaptures: 0: name: "punctuation.definition.group.begin.regexp.jisonlex"
+        endCaptures:   0: name: "punctuation.definition.group.end.regexp.jisonlex"
+        patterns: [include: "#regexp"]
+      },{
+        name:  "meta.lookahead.assertion.regexp.jisonlex"
+        begin: "\\(\\?="
+        end:   "\\)"
+        beginCaptures: 0: name: "punctuation.definition.group.begin.regexp.jisonlex"
+        endCaptures:   0: name: "punctuation.definition.group.end.regexp.jisonlex"
+        patterns: [include: "#regexp"]
+      },{
+        name:  "meta.negative.lookahead.assertion.regexp.jisonlex"
+        begin: "\\(\\?!"
+        end:   "\\)"
+        beginCaptures: 0: name: "punctuation.definition.group.begin.regexp.jisonlex"
+        endCaptures:   0: name: "punctuation.definition.group.end.regexp.jisonlex"
+        patterns: [include: "#regexp"]
+      },{
+        name:  "meta.group.regexp.jisonlex"
+        begin: "\\("
+        end:   "\\)"
+        beginCaptures: 0: name: "punctuation.definition.group.begin.regexp.jisonlex"
+        endCaptures:   0: name: "punctuation.definition.group.end.regexp.jisonlex"
+        patterns: [include: "#regexp"]
+      },{
+        name:  "constant.other.character-class.set.regexp.jisonlex"
+        begin: "(\\[)(\\^)?"
+        end:   "\\]"
         beginCaptures:
-          "1":
-            name: "keyword.operator.trailing-match.regexp.jisonlex"
-        comment: "detection of multiple trailing contexts"
-        end: "(?=\\s)|$"
+          1: name: "punctuation.definition.character-class.begin.regexp.jisonlex"
+          2: name: "keyword.operator.negation.regexp.jisonlex"
+        endCaptures:
+          0: name: "punctuation.definition.character-class.end.regexp.jisonlex"
         patterns: [
-          {
-            match: "/|\\$(?!\\S)"
-            name: "invalid.illegal.regexp.jisonlex"
-          }
-          {
-            include: "#subregexp"
-          }
+          {include: "#name_uses"}
+          {include: "#regexp_character_class"}
         ]
       }
+      {include: "#regexp_character_class"}
+      # These patterns are specific to Jison Lex.
+      {include: "#name_uses"}
+      {include: "source.jison#quoted_strings"}
+      {
+        name:  "keyword.other.eof.regexp.jisonlex"
+        match: "<<EOF>>"
+      },{
+        name:  "keyword.operator.negative.lookahead.regexp.jisonlex"
+        match: "/!"
+      },{
+        name:  "keyword.operator.lookahead.regexp.jisonlex"
+        match: "/"
+      }
+    ]
+
+  regexp_character_class:
+    patterns: [
+      # Character classes from
+      # https://github.com/atom/language-javascript/blob/master/grammars/regular%20expressions%20(javascript).cson
+      # and
+      # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp
+      {
+        name:  "constant.character.escape.character-class.word.regexp.jisonlex"
+        match: "\\\\w"
+      },{
+        name:  "constant.character.escape.character-class.non-word.regexp.jisonlex"
+        match: "\\\\W"
+      },{
+        name:  "constant.character.escape.character-class.space.regexp.jisonlex"
+        match: "\\\\s"
+      },{
+        name:  "constant.character.escape.character-class.non-space.regexp.jisonlex"
+        match: "\\\\S"
+      },{
+        name:  "constant.character.escape.character-class.digit.regexp.jisonlex"
+        match: "\\\\d"
+      },{
+        name:  "constant.character.escape.character-class.non-digit.regexp.jisonlex"
+        match: "\\\\D"
+      },{
+        name:  "constant.character.escape.character-class.control.regexp.jisonlex"
+        match: "\\\\c[A-Z]"
+      }
+      # https://github.com/atom/language-javascript/blob/master/grammars/javascript.cson
+      {include: "source.js#string_escapes"}
     ]

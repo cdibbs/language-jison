@@ -1,313 +1,473 @@
-'scopeName': 'source.jison'
-'fileTypes': [
-  'jison'
-]
-'name': 'Jison'
-'patterns': [
+"name": "Jison"
+scopeName: "source.jison"
+fileTypes: ["jison"]
+
+# This grammar is based on the Jison files from
+# https://github.com/zaach/ebnf-parser and
+# https://github.com/GerHobbelt/ebnf-parser. The original Jison allows
+# identifiers to contain (and end with) hyphens. GerHobbelt Jison makes a
+# distinction between identifiers, which can’t contain hyphens at all, and
+# names, which can contain (but *not* end with) hyphens. As a compromise, this
+# grammar uses
+#   [\p{Alpha}_](?:[\w-]*\w)?
+# to match both identifiers and names. This means that identifiers can contain
+# hyphens, even when they’re not allowed in GerHobbelt Jison.
+
+patterns: [
   {
-    'begin': '^(%%)$'                             # Has to be the first pattern
-    'comment': 'Match from first %% symbol to EOF'
-    'captures':
-      '0':
-        'name': 'meta.separator.section.jison'    # Match first %% symbol
-    'patterns': [
+    # Like Bison
+    # (https://www.gnu.org/software/bison/manual/html_node/Grammar-Outline.html),
+    # Jison files are divided into four sections:
+    #   %{
+    #     Prologue
+    #   %}
+    #   Declarations
+    #   %%
+    #   Grammar rules
+    #   %%
+    #   Epilogue
+    # Because there can be more than one prologue, another way to look at Jison
+    # files is that they’re divided into three sections separated by %%, just
+    # like Jison Lex files.
+    begin: "%%"
+    beginCaptures: 0: name: "meta.separator.section.jison"
+    patterns: [
       {
-        'begin': '^(%%)$'                         # Has to be the first pattern
-        'comment': 'Match from second %% symbol to EOF'
-        'captures':
-          '0':
-            'name': 'meta.separator.section.jison'# Match second %% symbol
-        'patterns': [
+        begin: "%%"
+        beginCaptures: 0: name: "meta.separator.section.jison"
+        patterns: [
           {
-            'include': '#exceeding_sections'      # Has to be the first pattern
-          }
-          {
-            'include': '#third_section'
+            name:  "meta.section.epilogue.jison"
+            begin: "(?!%%)"
+            patterns: [include: "#epilogue_section"]
           }
         ]
-      }
-      {
-        'include': '#second_section'
+      },{
+        name:  "meta.section.rules.jison"
+        begin: "(?!%%)"
+        end:   "(?=%%)"
+        patterns: [include: "#rules_section"]
       }
     ]
-  }
-  {
-    'include': '#first_section'
+  },{
+    name:  "meta.section.declarations.jison"
+    begin: "(?!%%)"
+    end:   "(?=%%)"
+    patterns: [include: "#declarations_section"]
   }
 ]
-'repository':
-  'first_section':
-    'patterns': [
+
+
+repository:
+  declarations_section:
+    patterns: [
+      {include: "#comments"}
+
+      # Jison declarations sections can have lexers embedded between %lex and
+      # /lex.
       {
-        'begin': '(?!^%%$)'
-        'end': '(?=^%%$)'
-        'comment': 'Match the content of the first section'
-        'name': 'meta.section.first.jison'
-        'patterns': [
+        begin: "^\\s*(%lex)\\s*$"
+        end:   "^\\s*(/lex)\\b"
+        # There may be a better choice of scope than “entity.name.tag”, but
+        # using a tag scope makes the start and end matches stand out. Also, the
+        # end match “/lex” is somewhat like an end tag.
+        beginCaptures: 1: name: "entity.name.tag.lexer.begin.jison"
+        endCaptures:   1: name: "entity.name.tag.lexer.end.jison"
+        # Simply setting the patterns object to {include: "source.jisonlex"}
+        # here doesn’t work for several reasons:
+        # - The Jison Lex grammar’s rules section treats /lex as a valid regex
+        #   pattern; /lex is the same as (?=lex).
+        # - The user-code section treats /lex as a division operator followed by
+        #   the identifier “lex”.
+        # - The user-code section also does not end.
+        # This is the Jison Lex grammar with end patterns that circumvent these
+        # issues.
+        patterns: [
           {
-            'include': '#prologue'
-          }
-          {
-            'include': '#declarations'
-          }
-          {
-            'include': '#comments'
-            'comment': 'jison supports Javascript comments'
-          }
-        ]
-      }
-    ]
-  'second_section':
-    'patterns': [
-      {
-        'begin': '(?!^%%$)'
-        'end': '(?=^%%$)'
-        'comment': 'Match the content of the second section'
-        'name': 'meta.section.second.jison'
-        'patterns': [
-          {
-            'include': '#comments'
-            'comment': 'jison supports C/C++ comments'
-          }
-          {
-            'include': '#rules'
-          }
-        ]
-      }
-    ]
-  'third_section':
-    'patterns': [
-      {
-        'begin': '(?!^%%$)'
-        'end': '(?=^%%$)'
-        'comment': 'Match the content of the third section'
-        'name': 'meta.section.third.jison'
-        'patterns': [
-          {
-            'include': 'source.js'
-            'comment': 'Epilogue contains Javascript code only'
-          }
-        ]
-      }
-    ]
-  'exceeding_sections':
-    'patterns': [
-      'begin': '^(%%)$'
-      'name': 'invalid.illegal.exceeding-sections.jison'
-      'comment': 'Match exceeding sections created by too many %% symbols'
-    ]
-  'prologue':
-    'patterns': [
-      'begin': '%{'
-      'end': '%}'
-      'comment': 'Match the prologues, first section only'
-      'name': 'meta.section.prologue'
-      'captures':
-        '0':
-          'name': 'meta.separator.prologue.jison' # Match %{ and %} symbols
-      'patterns': [
-        {
-          'include': 'source.js'
-          'comment': 'Prologues contain Javascript code only'
-        }
-      ]
-    ]
-  'declarations':
-    'patterns': [
-      {
-        'include': '#directives'
-      }
-      {
-        'include': '#types'
-      }
-      {
-        'include': '#symbols'
-      }
-      {
-        'include': '#numbers'
-      }
-      {
-        'include': '#block'
-      }
-      {
-        'include': '#strings'
-      }
-      {
-        'match': '\\;'
-        'comment': 'Semicolon can be only at the end of a union'
-        'name': 'punctuation.union-declaration.end.jison'
-      }
-    ]
-  'rules':
-    'patterns': [
-      {
-        'begin': '([a-zA-Z_.\-][a-zA-Z_.\-0-9]*)[ \\t\\n\\r]*(:)'
-        'end': ';'
-        'beginCaptures':
-          '1':
-            'name': 'variable.grammar-rule.token-def.jison'
-            'comment': 'Match the result of the grammar rule'
-          '2':
-            'name': 'punctuation.grammar-rule.result-separator.jison'     # :
-        'endCaptures':
-          '0':
-            'name': 'punctuation.grammar-rule.end.jison'
-        'comment': 'Match grammar rules, second section only'
-        'name': 'meta.grammar-rule.jison'
-        'patterns': [
-          {
-            'include': '#components'
+            begin: "%%"
+            end:   "(?=/lex)"
+            beginCaptures: 0: name: "meta.separator.section.jisonlex"
+            patterns: [
+              {
+                begin: "^%%"
+                end:   "(?=/lex)"
+                beginCaptures: 0: name: "meta.separator.section.jisonlex"
+                patterns: [
+                  {
+                    name:  "meta.section.user-code.jisonlex"
+                    begin: "(?!%%)"
+                    end:   "(?=/lex)"
+                    patterns: [include: "source.jisonlex#user_code_section"]
+                  }
+                ]
+              },{
+                name:  "meta.section.rules.jisonlex"
+                begin: "(?!%%)"
+                end:   "(?=^(?:%%|/lex))"
+                patterns: [include: "source.jisonlex#rules_section"]
+              }
+            ]
+          },{
+            name:  "meta.section.definitions.jisonlex"
+            begin: "(?!%%)"
+            end:   "(?=%%|/lex)"
+            patterns: [include: "source.jisonlex#definitions_section"]
           }
         ]
       }
-    ]
-  'components':
-    'patterns': [
+
       {
-        'begin': '(?=([a-zA-Z_.\-][a-zA-Z_.\-0-9]*)?)'  # (?) Comp can be empty
-        'end': '\\||(?=;)'
-        'endCaptures':
-          '0':
-            'name': 'punctuation.grammar-rule.component-separator.jison'  # |
-        'comment': 'Match each component in a grammar rule'
-        'name': 'meta.section.component'
-        'patterns': [
+        name:  "meta.section.prologue.jison"
+        begin: "(?=%\\{)"
+        end:   "(?<=%\\})"
+        patterns: [include: "#user_code_blocks"]
+      }
+
+      # These declarations are supported by the original Jison.
+      {include: "#options_declarations"}
+      {
+        name:  "keyword.other.declaration.$1.jison"
+        match: "%(ebnf|left|nonassoc|parse-param|right|start)\\b"
+      }
+
+      # These declarations are supported by the GerHobbelt fork.
+      {include: "#include_declarations"}
+      {
+        name:  "meta.code.jison"
+        begin: "%(code)\\b"
+        end:   "$"
+        beginCaptures: 0: name: "keyword.other.declaration.$1.jison"
+        patterns: [
+          # Note that GerHobbelt Jison supports
+          #   %code qualifier {code}
+          # but not Bison’s
+          #   %code {code}
+          # (https://www.gnu.org/software/bison/manual/html_node/_0025code-Summary.html).
+          {include: "#comments"}
+          {include: "#rule_actions"}
           {
-            'include': '#comments'
-            'comment': 'Comments can be also inside grammar components'
+            # GerHobbelt Jison supports “required”, Bison supports “requires”
+            # (https://www.gnu.org/software/bison/manual/html_node/_0025code-Summary.html).
+            name:  "keyword.other.code-qualifier.$1.jison"
+            match: "(init|required)"
           }
+          {include: "#quoted_strings"}
           {
-            'begin': '\''
-            'beginCaptures':
-              '0':
-                'name': 'punctuation.definition.string.begin.jison'
-            'end': '\''
-            'endCaptures':
-              '0':
-                'name': 'punctuation.definition.string.end.jison'
-            'comment': 'Match single character tokens inside components'
-            'name': 'string.quoted.single.character-token.jison'
-            'patterns': [
-              #TODO {
-              #  'include': '#string_escaped_char'
-              #}
-              # {
-              #  'include': '#line_continuation_character'
-              #}
+            name:  "string.unquoted.jison"
+            match: "\\b[\\p{Alpha}_](?:[\\w-]*\\w)?\\b"
+          }
+        ]
+      },{
+        # https://www.gnu.org/software/bison/manual/html_node/Token-Decl.html
+        name:  "meta.token.jison"
+        begin: "%(token)\\b"
+        end:   "$|(%%|;)"
+        beginCaptures: 0: name: "keyword.other.declaration.$1.jison"
+        endCaptures:   1: name: "punctuation.terminator.declaration.token.jison"
+        patterns: [
+          {include: "#comments"}
+          {include: "#numbers"}
+          {include: "#quoted_strings"}
+          {
+            name:  "invalid.unimplemented.jison"
+            match: "<[\\p{Alpha}_](?:[\\w-]*\\w)?>"
+          },{
+            name:  "entity.other.token.jison"
+            match: "\\S+"
+          }
+        ]
+      },{
+        name:  "keyword.other.declaration.$1.jison"
+        match: "%(debug|import|parser-type)\\b"
+      }
+
+      {
+        name:  "invalid.illegal.jison"
+        match: "%prec\\b"
+      },{
+        name:  "invalid.unimplemented.jison"
+        match: "%[\\p{Alpha}_](?:[\\w-]*\\w)?\\b"
+      }
+
+      {include: "#numbers"}
+      {include: "#quoted_strings"}
+    ]
+
+  rules_section:
+    patterns: [
+      {include: "#comments"}
+      {include: "#actions"}
+      {include: "#include_declarations"}
+      {
+        name:  "meta.rule.jison"
+        begin: "\\b[\\p{Alpha}_](?:[\\w-]*\\w)?\\b"
+        end:   ";"
+        beginCaptures: 0: name: "entity.name.constant.rule-result.jison"
+        endCaptures:   0: name: "punctuation.terminator.rule.jison"
+        patterns: [
+          {include: "#comments"}
+          {
+            name:  "meta.rule-components.jison"
+            begin: ":"
+            end:   "(?=;)"
+            beginCaptures: 0: name: "keyword.operator.rule-components.assignment.jison"
+            patterns: [
+              {include: "#comments"}
+              {include: "#quoted_strings"}
+              {
+                match: "(\\[)([\\p{Alpha}_](?:[\\w-]*\\w)?)(\\])"
+                captures:
+                  1: name: "punctuation.definition.named-reference.begin.jison"
+                  2: name: "entity.name.other.reference.jison"
+                  3: name: "punctuation.definition.named-reference.end.jison"
+              },{
+                name:  "meta.prec.jison"
+                begin: "(%(prec))\\s*"
+                end:   "(?<=['\"])|(?=\\s)"
+                beginCaptures: 1: name: "keyword.other.$2.jison"
+                patterns: [
+                  {include: "#comments"}
+                  {include: "#quoted_strings"}
+                  {
+                    name:  "constant.other.token.jison"
+                    begin: "(?=\\S)"
+                    end:   "(?=\\s)"
+                  }
+                ]
+              },{
+                name:  "keyword.operator.rule-components.separator.jison"
+                match: "\\|"
+              },{
+                name:  "keyword.other.$0.jison"
+                match: "\\berror\\b"
+              },{
+                # In addition to Bison’s %empty
+                # (https://www.gnu.org/software/bison/manual/html_node/Empty-Rules.html),
+                # GerHobbelt Jison supports %epsilon, ε (U+03B5 GREEK SMALL
+                # LETTER EPSILON), and these variants of the epsilon character:
+                # Ɛ U+0190 LATIN CAPITAL LETTER OPEN E
+                # ɛ U+0250 LATIN SMALL LETTER OPEN E
+                # ϵ U+03F5 GREEK LUNATE EPSILON SYMBOL
+                name:  "keyword.other.empty.jison"
+                match: "(?:%(?:e(?:mpty|psilon))|\\b[\u0190\u025B\u03B5\u03F5])\\b"
+              }
+              {include: "#rule_actions"}
             ]
           }
-          {
-            'include': '#directives'
-          }
-          {
-            'include': '#symbols'
-          }
-          {
-            'include': '#actions'
-          }
         ]
       }
     ]
-  'directives':
-    'patterns': [
+
+  epilogue_section:
+    patterns: [
+      {include: "#user_code_include_declarations"}
+      {include: "source.js"}
+    ]
+
+
+  actions:
+    patterns: [
       {
-        'match': '%[a-z\-]+'
-        'comment': 'Match %-directives'
-        'name': 'keyword.control.directive.jison'
+        name:  "meta.action.jison"
+        begin: "\\{\\{"
+        end:   "\\}\\}"
+        beginCaptures: 0: name: "punctuation.definition.action.begin.jison"
+        endCaptures:   0: name: "punctuation.definition.action.end.jison"
+        patterns: [include: "source.js"]
+      },{
+        name:  "meta.action.jison"
+        begin: "(?=%\\{)"
+        end:   "(?<=%\\})"
+        patterns: [include: "#user_code_blocks"]
       }
     ]
-  'symbols':
-    'patterns': [
+  rule_actions:
+    patterns: [
+      {include: "#actions"}
       {
-        'match': '[a-zA-Z_.\-][a-zA-Z_.\-0-9]*'
-        'comment': 'Match valid symbols'
-        'name': 'variable.grammar-rule.token-type.jison'
+        name:  "meta.action.jison"
+        begin: "\\{"
+        end:   "\\}"
+        beginCaptures: 0: name: "punctuation.definition.action.begin.jison"
+        endCaptures:   0: name: "punctuation.definition.action.end.jison"
+        patterns: [include: "source.js"]
+      }
+      {include: "#include_declarations"}
+      {
+        name:  "meta.action.jison"
+        begin: "->"
+        end:   "((//).*)?(?=$)"
+        beginCaptures:
+          0: name: "punctuation.definition.action.arrow.jison"
+        endCaptures:
+          1: name: "comment.line.double-slash.js"
+          2: name: "punctuation.definition.comment.js"
+        # TODO: The end pattern is based on the comment.line.double-slash.js
+        # pattern in
+        # https://github.com/atom/language-javascript/blob/master/grammars/javascript.cson.
+        # The end pattern of comment.line.double-slash.js is itself $, so $
+        # can’t be the end pattern here because it will never be matched. Is
+        # there an end pattern that can be used here that doesn’t duplicate a
+        # JavaScript grammar pattern?
+        patterns: [include: "source.js"]
       }
     ]
-  'types':
-    'patterns': [
+
+  comments:
+    patterns: [
       {
-        'begin': '<'
-        'end': '>'
-        'beginCaptures':
-          '0':
-            'name': 'punctuation.type-declaration.begin.jison'
-        'endCaptures':
-          '0':
-            'name': 'punctuation.type-declaration.end.jison'
-        'comment': 'Match type declarations'
-        'patterns': [
+        name:  "comment.line.double-slash.jison"
+        begin: "//"
+        end:   "(?=\\n)"
+        beginCaptures: 0: name: "punctuation.definition.comment.jison"
+      },{
+        name:  "comment.block.jison"
+        begin: "/\\*"
+        end:   "\\*/"
+        beginCaptures: 0: name: "punctuation.definition.comment.begin.jison"
+        endCaptures:   0: name: "punctuation.definition.comment.end.jison"
+      }
+    ]
+
+  include_declarations:
+    patterns: [
+      {
+        name:  "meta.include.jison"
+        begin: "(%(include))\\s*"
+        end:   "(?<=['\"])|(?=\\s)"
+        beginCaptures: 1: name: "keyword.other.declaration.$2.jison"
+        patterns: [include: "#include_paths"]
+      }
+    ]
+  user_code_include_declarations:
+    patterns: [
+      {
+        # This is almost identical to the patterns in the include_declarations
+        # object, but an %include must be at the beginning of a line in a user-
+        # code section.
+        name:  "meta.include.jison"
+        begin: "^(%include)\\s*"
+        end:   "(?<=['\"])|(?=\\s)"
+        beginCaptures: 1: name: "keyword.other.include.jison"
+        patterns: [include: "#include_paths"]
+      }
+    ]
+
+  include_paths:
+    patterns: [
+      {include: "#quoted_strings"}
+      {
+        name:  "string.unquoted.jison"
+        begin: "(?=\\S)"
+        end:   "(?=\\s)"
+        patterns: [include: "source.js#string_escapes"]
+      }
+    ]
+
+  numbers:
+    patterns: [
+      {
+        match: "(0[Xx])(\\h+)"
+        captures:
+          1: name: "storage.type.number.jison"
+          2: name: "constant.numeric.integer.hexadecimal.jison"
+      }
+      {
+        name:  "constant.numeric.integer.decimal.jison"
+        match: "\\d+"
+      }
+    ]
+
+  options_declarations:
+    patterns: [
+      {
+        name:  "meta.options.jison"
+        begin: "%options\\b"
+        end:   "$"
+        beginCaptures: 0: name: "keyword.other.options.jison"
+        patterns: [
           {
-            'match': '[$a-zA-Z\_][$a-zA-Z0-9\_]*'
-            'comment': 'A valid JS identifier'
+            name:  "entity.name.constant.jison"
+            match: "\\b[\\p{Alpha}_](?:[\\w-]*\\w)?\\b"
+          },{
+            begin: "(=)\\s*"
+            end:   "(?<=['\"])|(?=\\s)"
+            beginCaptures: 1: name: "keyword.operator.option.assignment.jison"
+            patterns: [
+              {include: "quoted_strings"}
+              {
+                name:  "string.unquoted.jison"
+                match: "\\S+"
+              }
+            ]
           }
+          {include: "quoted_strings"}
         ]
       }
     ]
-  'actions':
-    'patterns': [
+
+  quoted_strings:
+    patterns: [
       {
-        'begin': '\\{'
-        'beginCaptures':
-          '0':
-            'name': 'punctuation.action.begin.jison'
-        'end': '\\}'
-        'endCaptures':
-          '0':
-            'name': 'punctuation.action.end.jison'
-        'name': 'meta.action.jison'
-        'comment': 'Match action blocks associated with grammar rules'
-        'patterns': [
-          # TODO: Patterns for $-variable go here, or inside block_innards
-          {
-            'include': 'source.js'
-          }
-          {
-            'match': '\\$[$a-zA-Z\_][$a-zA-Z0-9\_]*',
-            'name': 'variable.interpolation.grammar-rule.jison',
-            'comment': 'A grammar rule variable reference.'
-          }
-        ]
+        name:  "string.quoted.double.jison"
+        begin: '"'
+        end:   '"'
+        # https://github.com/atom/language-javascript/blob/master/grammars/javascript.cson
+        patterns: [include: "source.js#string_escapes"]
+      },{
+        name:  "string.quoted.single.jison"
+        begin: "'"
+        end:   "'"
+        patterns: [include: "source.js#string_escapes"]
       }
     ]
-  'comments':
-    'patterns': [
+
+  user_code_blocks:
+    patterns: [
       {
-        'name': 'comment.line.double-slash.jison'
-        'match': '//.*$'
-      }
-      {
-        'contentName': 'comment.block.jison'
-        'begin': '/\\*'
-        'end': '\\*/'
-        'captures':
-          '0':
-            'name': 'punctuation.definition.comment.jison'
+        name:  "meta.user-code-block.jison"
+        begin: "%\\{"
+        end:   "%\\}"
+        beginCaptures: 0: name: "punctuation.definition.user-code-block.begin.jison"
+        endCaptures:   0: name: "punctuation.definition.user-code-block.end.jison"
+        patterns: [include: "source.js"]
       }
     ]
-  'numbers':
-    'patterns': [
+
+
+# These are from https://github.com/GerHobbelt/jison/blob/master/lib/jison.js.
+injections:
+  "L:meta.action.jison -(comment | string), source.js.embedded.source":
+    patterns: [
       {
-        'match': '\\b((0(x|X)[0-9a-fA-F]*)|(([0-9]+\\.?[0-9]*)|(\\.[0-9]+))((e|E)(\\+|-)?[0-9]+)?)(L|l|UL|ul|u|U|F|f|ll|LL|ull|ULL)?\\b'
-        'name': 'constant.numeric.c'
-      }
-    ]
-  'block':
-    'patterns': [
-      {
-        'begin': '\\{'
-        'beginCaptures':
-          '0':
-            'name': 'punctuation.section.block.begin.c'
-        'end': '\\}|(?=\\s*#\\s*endif\\b)'
-        'endCaptures':
-          '0':
-            'name': 'punctuation.section.block.end.c'
-        'name': 'meta.block.c'
-        'patterns': [
-          {
-            'include': 'source.js'
-          }
-        ]
+        name:  "variable.language.semantic-value.jison"
+        match: "\\${2}"
+      },{
+        name:  "variable.language.result-location.jison"
+        match: "@\\$"
+      },{
+        name:  "variable.language.stack-index-0.jison"
+        match: "##\\$|\\byysp\\b"
+      },{
+        name:  "support.variable.token-reference.jison"
+        match: "#\\S+#"
+      },{
+        name:  "variable.language.result-id.jison"
+        match: "#\\$"
+      },{
+        name:  "support.variable.token-value.jison"
+        match: "\\$(?:-?\\d+|[\\p{Alpha}_](?:[\\w-]*\\w)?)"
+      },{
+        name:  "support.variable.token-location.jison"
+        match: "@(?:-?\\d+|[\\p{Alpha}_](?:[\\w-]*\\w)?)"
+      },{
+        name:  "support.variable.stack-index.jison"
+        match: "##(?:-?\\d+|[\\p{Alpha}_](?:[\\w-]*\\w)?)"
+      },{
+        name:  "support.variable.token-id.jison"
+        match: "#(?:-?\\d+|[\\p{Alpha}_](?:[\\w-]*\\w)?)"
+      },{
+        name:  "keyword.other.jison"
+        match: "\\byy(?:clearin|erro[kr])\\b"
       }
     ]
