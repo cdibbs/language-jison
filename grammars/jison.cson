@@ -346,9 +346,9 @@ repository:
         # object, but an %include must be at the beginning of a line in a user-
         # code section.
         name:  "meta.include.jison"
-        begin: "^(%include)\\s*"
+        begin: "^(%(include))\\s*"
         end:   "(?<=['\"])|(?=\\s)"
-        beginCaptures: 1: name: "keyword.other.include.jison"
+        beginCaptures: 1: name: "keyword.other.declaration.$2.jison"
         patterns: [include: "#include_paths"]
       }
     ]
