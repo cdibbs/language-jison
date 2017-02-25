@@ -34,6 +34,11 @@ console.log('hello, world');
 
 %%
 
+/*
+ * comment
+ */
+// comment
+
 %{ function(){return;} %}
 {{ function(){return;} }}
 
