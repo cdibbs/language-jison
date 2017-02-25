@@ -29,7 +29,7 @@ patterns: [
         patterns: [
           {
             name:  "meta.section.user-code.jisonlex"
-            begin: "(?!%%)"
+            begin: "\\G"
             patterns: [include: "#user_code_section"]
           }
         ]

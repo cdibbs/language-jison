@@ -38,7 +38,7 @@ patterns: [
         patterns: [
           {
             name:  "meta.section.epilogue.jison"
-            begin: "(?!%%)"
+            begin: "\\G"
             patterns: [include: "#epilogue_section"]
           }
         ]
