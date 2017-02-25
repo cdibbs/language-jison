@@ -578,7 +578,7 @@ describe "language-jison", ->
       expect(tokens[0]).toEqual value: "%%", scopes: ["source.jisonlex", "meta.separator.section.jisonlex"]
       tokens = lines[4]
       expect(tokens.length).toBe 5
-      expect(tokens[0]).toEqual value: "%include", scopes: ["source.jisonlex", "meta.section.user-code.jisonlex", "meta.include.jison", "keyword.other.include.jison"]
+      expect(tokens[0]).toEqual value: "%include", scopes: ["source.jisonlex", "meta.section.user-code.jisonlex", "meta.include.jison", "keyword.other.declaration.include.jison"]
       expect(tokens[1]).toEqual value: " ", scopes: ["source.jisonlex", "meta.section.user-code.jisonlex", "meta.include.jison"]
       expect(tokens[2]).toEqual value: "'", scopes: ["source.jisonlex", "meta.section.user-code.jisonlex", "meta.include.jison", "string.quoted.single.jison"]
       expect(tokens[3]).toEqual value: "file.js", scopes: ["source.jisonlex", "meta.section.user-code.jisonlex", "meta.include.jison", "string.quoted.single.jison"]
