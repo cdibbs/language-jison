@@ -246,7 +246,7 @@ repository:
                 # GerHobbelt Jison supports %epsilon, ε (U+03B5 GREEK SMALL
                 # LETTER EPSILON), and these variants of the epsilon character:
                 # Ɛ U+0190 LATIN CAPITAL LETTER OPEN E
-                # ɛ U+0250 LATIN SMALL LETTER OPEN E
+                # ɛ U+025B LATIN SMALL LETTER OPEN E
                 # ϵ U+03F5 GREEK LUNATE EPSILON SYMBOL
                 name:  "keyword.other.empty.jison"
                 match: "(?:%(?:e(?:mpty|psilon))|\\b[\u0190\u025B\u03B5\u03F5])\\b"
