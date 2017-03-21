@@ -1,0 +1,3 @@
+".source.jison, .source.jisonlex":
+  editor:
+    commentStart: "// "
