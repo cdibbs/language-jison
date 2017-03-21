@@ -9,9 +9,10 @@ fileTypes: ["jison"]
 # distinction between identifiers, which can’t contain hyphens at all, and
 # names, which can contain (but *not* end with) hyphens. As a compromise, this
 # grammar uses
-#   [\p{Alpha}_](?:[\w-]*\w)?
+#   [[:alpha:]_](?:[\w-]*\w)?
 # to match both identifiers and names. This means that identifiers can contain
-# hyphens, even when they’re not allowed in GerHobbelt Jison.
+# hyphens, even when they’re not allowed in GerHobbelt Jison. Use [:alpha:]
+# instead of \p{Alpha} for compatibility with GitHub Linguist.
 
 patterns: [
   {
@@ -44,14 +45,14 @@ patterns: [
         ]
       },{
         name:  "meta.section.rules.jison"
-        begin: "(?!%%)"
+        begin: "\\G"
         end:   "(?=%%)"
         patterns: [include: "#rules_section"]
       }
     ]
   },{
     name:  "meta.section.declarations.jison"
-    begin: "(?!%%)"
+    begin: "^"
     end:   "(?=%%)"
     patterns: [include: "#declarations_section"]
   }
@@ -66,7 +67,7 @@ repository:
       # Jison declarations sections can have lexers embedded between %lex and
       # /lex.
       {
-        begin: "^\\s*(%lex)\\s*$"
+        begin: "^\\s*(%lex)\\s*(?=\\n)"
         end:   "^\\s*(/lex)\\b"
         # There may be a better choice of scope than “entity.name.tag”, but
         # using a tag scope makes the start and end matches stand out. Also, the
@@ -95,21 +96,21 @@ repository:
                 patterns: [
                   {
                     name:  "meta.section.user-code.jisonlex"
-                    begin: "(?!%%)"
+                    begin: "\\G"
                     end:   "(?=/lex)"
                     patterns: [include: "source.jisonlex#user_code_section"]
                   }
                 ]
               },{
                 name:  "meta.section.rules.jisonlex"
-                begin: "(?!%%)"
+                begin: "\\G"
                 end:   "(?=^(?:%%|/lex))"
                 patterns: [include: "source.jisonlex#rules_section"]
               }
             ]
           },{
             name:  "meta.section.definitions.jisonlex"
-            begin: "(?!%%)"
+            begin: "\\G"
             end:   "(?=%%|/lex)"
             patterns: [include: "source.jisonlex#definitions_section"]
           }
@@ -154,7 +155,7 @@ repository:
           {include: "#quoted_strings"}
           {
             name:  "string.unquoted.jison"
-            match: "\\b[\\p{Alpha}_](?:[\\w-]*\\w)?\\b"
+            match: "\\b[[:alpha:]_](?:[\\w-]*\\w)?\\b"
           }
         ]
       },{
@@ -170,7 +171,7 @@ repository:
           {include: "#quoted_strings"}
           {
             name:  "invalid.unimplemented.jison"
-            match: "<[\\p{Alpha}_](?:[\\w-]*\\w)?>"
+            match: "<[[:alpha:]_](?:[\\w-]*\\w)?>"
           },{
             name:  "entity.other.token.jison"
             match: "\\S+"
@@ -186,7 +187,7 @@ repository:
         match: "%prec\\b"
       },{
         name:  "invalid.unimplemented.jison"
-        match: "%[\\p{Alpha}_](?:[\\w-]*\\w)?\\b"
+        match: "%[[:alpha:]_](?:[\\w-]*\\w)?\\b"
       }
 
       {include: "#numbers"}
@@ -200,7 +201,7 @@ repository:
       {include: "#include_declarations"}
       {
         name:  "meta.rule.jison"
-        begin: "\\b[\\p{Alpha}_](?:[\\w-]*\\w)?\\b"
+        begin: "\\b[[:alpha:]_](?:[\\w-]*\\w)?\\b"
         end:   ";"
         beginCaptures: 0: name: "entity.name.constant.rule-result.jison"
         endCaptures:   0: name: "punctuation.terminator.rule.jison"
@@ -215,7 +216,7 @@ repository:
               {include: "#comments"}
               {include: "#quoted_strings"}
               {
-                match: "(\\[)([\\p{Alpha}_](?:[\\w-]*\\w)?)(\\])"
+                match: "(\\[)([[:alpha:]_](?:[\\w-]*\\w)?)(\\])"
                 captures:
                   1: name: "punctuation.definition.named-reference.begin.jison"
                   2: name: "entity.name.other.reference.jison"
@@ -246,7 +247,7 @@ repository:
                 # GerHobbelt Jison supports %epsilon, ε (U+03B5 GREEK SMALL
                 # LETTER EPSILON), and these variants of the epsilon character:
                 # Ɛ U+0190 LATIN CAPITAL LETTER OPEN E
-                # ɛ U+0250 LATIN SMALL LETTER OPEN E
+                # ɛ U+025B LATIN SMALL LETTER OPEN E
                 # ϵ U+03F5 GREEK LUNATE EPSILON SYMBOL
                 name:  "keyword.other.empty.jison"
                 match: "(?:%(?:e(?:mpty|psilon))|\\b[\u0190\u025B\u03B5\u03F5])\\b"
@@ -371,8 +372,7 @@ repository:
         captures:
           1: name: "storage.type.number.jison"
           2: name: "constant.numeric.integer.hexadecimal.jison"
-      }
-      {
+      },{
         name:  "constant.numeric.integer.decimal.jison"
         match: "\\d+"
       }
@@ -388,7 +388,7 @@ repository:
         patterns: [
           {
             name:  "entity.name.constant.jison"
-            match: "\\b[\\p{Alpha}_](?:[\\w-]*\\w)?\\b"
+            match: "\\b[[:alpha:]_](?:[\\w-]*\\w)?\\b"
           },{
             begin: "(=)\\s*"
             end:   "(?<=['\"])|(?=\\s)"
@@ -456,16 +456,16 @@ injections:
         match: "#\\$"
       },{
         name:  "support.variable.token-value.jison"
-        match: "\\$(?:-?\\d+|[\\p{Alpha}_](?:[\\w-]*\\w)?)"
+        match: "\\$(?:-?\\d+|[[:alpha:]_](?:[\\w-]*\\w)?)"
       },{
         name:  "support.variable.token-location.jison"
-        match: "@(?:-?\\d+|[\\p{Alpha}_](?:[\\w-]*\\w)?)"
+        match: "@(?:-?\\d+|[[:alpha:]_](?:[\\w-]*\\w)?)"
       },{
         name:  "support.variable.stack-index.jison"
-        match: "##(?:-?\\d+|[\\p{Alpha}_](?:[\\w-]*\\w)?)"
+        match: "##(?:-?\\d+|[[:alpha:]_](?:[\\w-]*\\w)?)"
       },{
         name:  "support.variable.token-id.jison"
-        match: "#(?:-?\\d+|[\\p{Alpha}_](?:[\\w-]*\\w)?)"
+        match: "#(?:-?\\d+|[[:alpha:]_](?:[\\w-]*\\w)?)"
       },{
         name:  "variable.language.jison"
         match: "\\byy(?:l(?:eng|ineno|oc|stack)|s(?:tate|s?tack)|text|vstack)\\b"

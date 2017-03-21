@@ -32,9 +32,8 @@ describe "language-jison", ->
         /lex
       """
       tokens = lines[0]
-      expect(tokens.length).toBe 2
+      expect(tokens.length).toBe 1
       expect(tokens[0]).toEqual value: "%lex", scopes: ["source.jison", "meta.section.declarations.jison", "entity.name.tag.lexer.begin.jison"]
-      expect(tokens[1]).toEqual value: "", scopes: ["source.jison", "meta.section.declarations.jison"]
       tokens = lines[1]
       expect(tokens.length).toBe 1
       expect(tokens[0]).toEqual value: "", scopes: ["source.jison", "meta.section.declarations.jison", "meta.section.definitions.jisonlex"]
@@ -53,9 +52,8 @@ describe "language-jison", ->
         /lex
       """
       tokens = lines[0]
-      expect(tokens.length).toBe 2
+      expect(tokens.length).toBe 1
       expect(tokens[0]).toEqual value: "%lex", scopes: ["source.jison", "meta.section.declarations.jison", "entity.name.tag.lexer.begin.jison"]
-      expect(tokens[1]).toEqual value: "", scopes: ["source.jison", "meta.section.declarations.jison"]
       tokens = lines[1]
       expect(tokens.length).toBe 1
       expect(tokens[0]).toEqual value: "", scopes: ["source.jison", "meta.section.declarations.jison", "meta.section.definitions.jisonlex"]
@@ -158,7 +156,10 @@ describe "language-jison", ->
       expect(tokens[6]).toEqual value: "include.js", scopes: ["source.jison", "meta.section.declarations.jison", "meta.code.jison", "meta.include.jison", "string.unquoted.jison"]
 
     it "tokenizes %options declarations", ->
-      {tokens} = grammar.tokenizeLine "%options foo={x}// not-a-comment"
+      lines = grammar.tokenizeLines """
+        %options foo={x}// not-a-comment
+      """
+      tokens = lines[0]
       expect(tokens.length).toBe 7
       expect(tokens[0]).toEqual value: "%options", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "keyword.other.options.jison"]
       expect(tokens[1]).toEqual value: " ", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison"]
