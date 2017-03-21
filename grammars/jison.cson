@@ -371,8 +371,7 @@ repository:
         captures:
           1: name: "storage.type.number.jison"
           2: name: "constant.numeric.integer.hexadecimal.jison"
-      }
-      {
+      },{
         name:  "constant.numeric.integer.decimal.jison"
         match: "\\d+"
       }
