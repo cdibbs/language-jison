@@ -1,6 +1,6 @@
 {
   "name": "language-jison",
-  "version": "2.5.3",
+  "version": "2.6.0",
   "description": "Syntax support for Jison files",
   "repository": "https://github.com/cdibbs/language-jison",
   "license": "MIT",
