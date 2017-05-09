@@ -386,6 +386,7 @@ repository:
         end:   "$"
         beginCaptures: 0: name: "keyword.other.options.jison"
         patterns: [
+          {include: "#comments"}
           {
             name:  "entity.name.constant.jison"
             match: "\\b[[:alpha:]_](?:[\\w-]*\\w)?\\b"
