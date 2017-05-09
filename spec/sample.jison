@@ -52,6 +52,7 @@ expression
   | '-' expression %prec UMINUS { yysp; }
   | "(" expression ")" %include include.js //comment
   | error -> yyclearin;yyerrok;//comment
+  | %empty → //comment
   ;
 
 empty1: /* empty */ { $$ = []; } | %empty { $$ = []; } | %epsilon { $$ = []; };

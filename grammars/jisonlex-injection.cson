@@ -12,14 +12,14 @@ scopeName: "source.jisonlex-injection"
 #
 # This replacement even occurs in comments and JavaScript strings, but it seems
 # unnecessary to highlight these strings in comments. Replacing
-#   "L:meta.rule.action.jisonlex -comment"
+#   "L:(meta.rule.action.jisonlex - comment)"
 # with
-#   "L:meta.rule.action.jisonlex -(comment | string), source.js.embedded.source"
+#   "L:(meta.rule.action.jisonlex - (comment | string)), source.js.embedded.source"
 # will eliminate highlighting in strings, but something like
 #  `${"yytext"}`
 # will still not be highlighted correctly. The L: prefix makes sure that things
 # like the “yylloc” in “yylloc.first_line” are highlighted correctly.
-injectionSelector: "L:meta.rule.action.jisonlex -comment"
+injectionSelector: "L:(meta.rule.action.jisonlex - comment)"
 patterns: [
   {
     name:  "variable.language.jisonlex"
