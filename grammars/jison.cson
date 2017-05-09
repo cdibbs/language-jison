@@ -296,7 +296,8 @@ repository:
       {include: "#include_declarations"}
       {
         name:  "meta.action.jison"
-        begin: "->"
+        # GerHobbelt Jison supports -> and → (U+2192 RIGHTWARDS ARROW).
+        begin: "(?:->|→)"
         end:   "((//).*)?(?=$)"
         beginCaptures:
           0: name: "punctuation.definition.action.arrow.jison"

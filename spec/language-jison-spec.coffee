@@ -227,6 +227,7 @@ describe "language-jison", ->
         | '-' expression %prec UMINUS { yysp; }
         | "(" expression ")" %include include.js //comment
         | error -> yyclearin;yyerrok;//comment
+        | %empty → //comment
         ;
       """
       tokens = lines[0]
@@ -319,6 +320,16 @@ describe "language-jison", ->
       expect(tokens[10]).toEqual value: "//", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "comment.line.double-slash.js", "punctuation.definition.comment.js"]
       expect(tokens[11]).toEqual value: "comment", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "comment.line.double-slash.js"]
       tokens = lines[8]
+      expect(tokens.length).toBe 8
+      expect(tokens[0]).toEqual value: "|", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "keyword.operator.rule-components.separator.jison"]
+      expect(tokens[1]).toEqual value: " ", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison"]
+      expect(tokens[2]).toEqual value: "%empty", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "keyword.other.empty.jison"]
+      expect(tokens[3]).toEqual value: " ", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison"]
+      expect(tokens[4]).toEqual value: "→", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "punctuation.definition.action.arrow.jison"]
+      expect(tokens[5]).toEqual value: ' ', scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison"]
+      expect(tokens[6]).toEqual value: "//", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "comment.line.double-slash.js", "punctuation.definition.comment.js"]
+      expect(tokens[7]).toEqual value: "comment", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "comment.line.double-slash.js"]
+      tokens = lines[9]
       expect(tokens.length).toBe 1
       expect(tokens[0]).toEqual value: ";", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "punctuation.terminator.rule.jison"]
 
