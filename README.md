@@ -4,7 +4,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/TBD?svg=true)](https://ci.appveyor.com/project/cdibbs/language-jison)
 [![apm](https://img.shields.io/apm/dm/language-jison.svg)](https://atom.io/packages/language-jison)
 
-Adds syntax highlighting to Jison files in Atom.  
+Adds syntax highlighting to Jison files in Atom, as well as on Github.  
 
 Thanks to, and based in part on, the following projects:  
 1. [Bison improved plugin](https://github.com/EliaGeretto/language-bison-improved)  
