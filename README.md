@@ -1,7 +1,7 @@
 # Jison Atom package  
 
 [![Build status](https://travis-ci.org/cdibbs/language-jison.svg?branch=master)](https://travis-ci.org/cdibbs/language-jison)
-[![Build status](https://ci.appveyor.com/api/projects/status/TBD?svg=true)](https://ci.appveyor.com/project/cdibbs/language-jison)
+[![Build status](https://ci.appveyor.com/api/projects/status/n02wnmjfbvvnc6ra?svg=true)](https://ci.appveyor.com/project/cdibbs/language-jison)
 [![apm](https://img.shields.io/apm/dm/language-jison.svg)](https://atom.io/packages/language-jison)
 
 Adds syntax highlighting to Jison files in Atom, as well as on Github.  
