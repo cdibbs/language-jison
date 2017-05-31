@@ -222,7 +222,7 @@ describe "language-jison", ->
         %%
         start: expression;
         expression
-        : TOKEN {$$ = [$1];}
+        : TOKEN EOF {$$ = [$1];}
         | expression '+'[add] expression %{ $$ = `${@add.first_line}`; %}
         | '-' expression %prec UMINUS { yysp; }
         | "(" expression ")" %include include.js //comment
@@ -243,15 +243,17 @@ describe "language-jison", ->
       expect(tokens.length).toBe 1
       expect(tokens[0]).toEqual value: "expression", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "entity.name.constant.rule-result.jison"]
       tokens = lines[3]
-      expect(tokens.length).toBe 8
+      expect(tokens.length).toBe 10
       expect(tokens[0]).toEqual value: ":", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "keyword.operator.rule-components.assignment.jison"]
       expect(tokens[1]).toEqual value: " TOKEN ", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison"]
-      expect(tokens[2]).toEqual value: "{", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "punctuation.definition.action.begin.jison"]
-      expect(tokens[3]).toEqual value: "$$", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "variable.language.semantic-value.jison"]
-      expect(tokens[4]).toEqual value: " = [", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison"]
-      expect(tokens[5]).toEqual value: "$1", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "support.variable.token-value.jison"]
-      expect(tokens[6]).toEqual value: "];", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison"]
-      expect(tokens[7]).toEqual value: "}", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "punctuation.definition.action.end.jison"]
+      expect(tokens[2]).toEqual value: "EOF", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "keyword.other.EOF.jison"]
+      expect(tokens[3]).toEqual value: " ", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison"]
+      expect(tokens[4]).toEqual value: "{", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "punctuation.definition.action.begin.jison"]
+      expect(tokens[5]).toEqual value: "$$", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "variable.language.semantic-value.jison"]
+      expect(tokens[6]).toEqual value: " = [", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison"]
+      expect(tokens[7]).toEqual value: "$1", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "support.variable.token-value.jison"]
+      expect(tokens[8]).toEqual value: "];", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison"]
+      expect(tokens[9]).toEqual value: "}", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "punctuation.definition.action.end.jison"]
       tokens = lines[4]
       expect(tokens.length).toBe 16
       expect(tokens[0]).toEqual value: "|", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "keyword.operator.rule-components.separator.jison"]

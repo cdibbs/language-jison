@@ -240,7 +240,7 @@ repository:
                 match: "\\|"
               },{
                 name:  "keyword.other.$0.jison"
-                match: "\\berror\\b"
+                match: "\\b(?:EOF|error)\\b"
               },{
                 # In addition to Bison’s %empty
                 # (https://www.gnu.org/software/bison/manual/html_node/Empty-Rules.html),
@@ -297,7 +297,7 @@ repository:
       {
         name:  "meta.action.jison"
         # GerHobbelt Jison supports -> and → (U+2192 RIGHTWARDS ARROW).
-        begin: "(?:->|→)"
+        begin: "->|→"
         end:   "((//).*)?(?=$)"
         beginCaptures:
           0: name: "punctuation.definition.action.arrow.jison"
