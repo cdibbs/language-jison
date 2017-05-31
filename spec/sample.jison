@@ -47,7 +47,7 @@ console.log('hello, world');
 start: expression;
 
 expression
-  : TOKEN { $$ = [$1]; }
+  : TOKEN EOF { $$ = [$1]; }
   | expression '+'[add] expression %{ $$ = `${@add.first_line}`; %}
   | '-' expression %prec UMINUS { yysp; }
   | "(" expression ")" %include include.js //comment

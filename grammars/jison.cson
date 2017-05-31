@@ -240,7 +240,7 @@ repository:
                 match: "\\|"
               },{
                 name:  "keyword.other.$0.jison"
-                match: "\\berror\\b"
+                match: "\\b(?:EOF|error)\\b"
               },{
                 # In addition to Bison’s %empty
                 # (https://www.gnu.org/software/bison/manual/html_node/Empty-Rules.html),
