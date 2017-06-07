@@ -159,6 +159,19 @@ repository:
           }
         ]
       },{
+        name:  "meta.parser-type.jison"
+        begin: "%(parser-type)\\b"
+        end:   "$"
+        beginCaptures: 0: name: "keyword.other.declaration.$1.jison"
+        patterns: [
+          {include: "#comments"}
+          {include: "#quoted_strings"}
+          {
+            name:  "string.unquoted.jison"
+            match: "\\b[[:alpha:]_](?:[\\w-]*\\w)?\\b"
+          }
+        ]
+      },{
         # https://www.gnu.org/software/bison/manual/html_node/Token-Decl.html
         name:  "meta.token.jison"
         begin: "%(token)\\b"
@@ -179,7 +192,7 @@ repository:
         ]
       },{
         name:  "keyword.other.declaration.$1.jison"
-        match: "%(debug|import|parser-type)\\b"
+        match: "%(debug|import)\\b"
       }
 
       {

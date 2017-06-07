@@ -178,6 +178,15 @@ describe "language-jison", ->
       expect(tokens[4]).toEqual value: "//", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "comment.line.double-slash.jison", "punctuation.definition.comment.jison"]
       expect(tokens[5]).toEqual value: "comment", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "comment.line.double-slash.jison"]
 
+    it "tokenizes %parser-type declarations", ->
+      {tokens} = grammar.tokenizeLine "%parser-type lr0//comment"
+      expect(tokens.length).toBe 5
+      expect(tokens[0]).toEqual value: "%parser-type", scopes: ["source.jison", "meta.section.declarations.jison", "meta.parser-type.jison", "keyword.other.declaration.parser-type.jison"]
+      expect(tokens[1]).toEqual value: " ", scopes: ["source.jison", "meta.section.declarations.jison", "meta.parser-type.jison"]
+      expect(tokens[2]).toEqual value: "lr0", scopes: ["source.jison", "meta.section.declarations.jison", "meta.parser-type.jison", "string.unquoted.jison"]
+      expect(tokens[3]).toEqual value: "//", scopes: ["source.jison", "meta.section.declarations.jison", "meta.parser-type.jison", "comment.line.double-slash.jison", "punctuation.definition.comment.jison"]
+      expect(tokens[4]).toEqual value: "comment", scopes: ["source.jison", "meta.section.declarations.jison", "meta.parser-type.jison", "comment.line.double-slash.jison"]
+
     it "tokenizes %token declarations", ->
       lines = grammar.tokenizeLines """
         %token TOKEN1 //comment
