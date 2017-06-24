@@ -382,7 +382,7 @@ repository:
   numbers:
     patterns: [
       {
-        match: "(0[Xx])(\\h+)"
+        match: "(0[Xx])([0-9A-Fa-f]+)"
         captures:
           1: name: "storage.type.number.jison"
           2: name: "constant.numeric.integer.hexadecimal.jison"
