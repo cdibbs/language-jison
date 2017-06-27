@@ -380,6 +380,7 @@ repository:
         name:  "string.unquoted.jison"
         begin: "(?=\\S)"
         end:   "(?=\\s)"
+        # https://github.com/atom/language-javascript/blob/master/grammars/javascript.cson
         patterns: [include: "source.js#string_escapes"]
       }
     ]
