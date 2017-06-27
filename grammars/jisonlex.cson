@@ -30,6 +30,7 @@ patterns: [
           {
             name:  "meta.section.user-code.jisonlex"
             begin: "\\G"
+            contentName: "source.js.embedded.jison"
             patterns: [include: "#user_code_section"]
           }
         ]
@@ -58,7 +59,7 @@ repository:
         name:  "meta.definition.jisonlex"
         begin: "\\b[[:alpha:]_](?:[\\w-]*\\w)?\\b"
         end:   "$"
-        beginCaptures: 0: name: "entity.name.variable.jisonlex"
+        beginCaptures: 0: name: "entity.name.other.definition.jisonlex"
         patterns: [
           {include: "source.jison#comments"}
           {
@@ -138,6 +139,7 @@ repository:
           2: name: "punctuation.definition.comment.js"
         # TODO: See the arrow (->) action in the Jison grammar for what’s going
         # on with the duplicated JavaScript comment patterns.
+        contentName: "source.js.embedded.jison"
         patterns: [
           {include: "source.jison#include_declarations"}
           {include: "source.js"}
@@ -155,8 +157,11 @@ repository:
   name_uses:
     patterns: [
       {
-        name:  "variable.other.jisonlex"
-        match: "\\{[[:alpha:]_](?:[\\w-]*\\w)?\\}"
+        name:  "constant.other.name-use.jisonlex"
+        match: "(\\{)[[:alpha:]_](?:[\\w-]*\\w)?(\\})"
+        captures:
+          1: name: "punctuation.definition.name-use.begin.jisonlex"
+          2: name: "punctuation.definition.name-use.end.jisonlex"
       }
     ]
 

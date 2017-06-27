@@ -16,7 +16,6 @@ name3 ./*comment/!/*/.//comment/!/%%
 %s start_condition x
 %x _αβγ
 
-%options foo={x}// not-a-comment
 %include include.js
 
 %%

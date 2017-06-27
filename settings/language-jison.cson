@@ -1,3 +1,18 @@
 ".source.jison, .source.jisonlex":
   editor:
     commentStart: "// "
+
+".rule-components.jison":
+  autocomplete:
+    symbols:
+      constant:
+        selector: ".token, .rule-result"
+        typePriority: 2
+      "":
+        selector: ".source"
+        typePriority: 1
+      builtin:
+        suggestions: [
+          "EOF"
+          "error"
+        ]

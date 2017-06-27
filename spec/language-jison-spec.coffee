@@ -81,7 +81,7 @@ describe "language-jison", ->
       expect(tokens[0]).toEqual value: "%{", scopes: ["source.jison", "meta.section.declarations.jison", "meta.section.prologue.jison", "meta.user-code-block.jison", "punctuation.definition.user-code-block.begin.jison"]
       tokens = lines[1]
       expect(tokens.length).toBe 1
-      expect(tokens[0]).toEqual value: "", scopes: ["source.jison", "meta.section.declarations.jison", "meta.section.prologue.jison", "meta.user-code-block.jison"]
+      expect(tokens[0]).toEqual value: "", scopes: ["source.jison", "meta.section.declarations.jison", "meta.section.prologue.jison", "meta.user-code-block.jison", "source.js.embedded.jison"]
       tokens = lines[2]
       expect(tokens.length).toBe 5
       expect(tokens[0]).toEqual value: "%}", scopes: ["source.jison", "meta.section.declarations.jison", "meta.section.prologue.jison", "meta.user-code-block.jison", "punctuation.definition.user-code-block.end.jison"]
@@ -142,7 +142,7 @@ describe "language-jison", ->
       expect(tokens[4]).toEqual value: '"', scopes: ["source.jison", "meta.section.declarations.jison", "meta.code.jison", "string.quoted.double.jison"]
       expect(tokens[5]).toEqual value: " ", scopes: ["source.jison", "meta.section.declarations.jison", "meta.code.jison"]
       expect(tokens[6]).toEqual value: "->", scopes: ["source.jison", "meta.section.declarations.jison", "meta.code.jison", "meta.action.jison", "punctuation.definition.action.arrow.jison"]
-      expect(tokens[7]).toEqual value: " return;", scopes: ["source.jison", "meta.section.declarations.jison", "meta.code.jison", "meta.action.jison"]
+      expect(tokens[7]).toEqual value: " return;", scopes: ["source.jison", "meta.section.declarations.jison", "meta.code.jison", "meta.action.jison", "source.js.embedded.jison"]
       expect(tokens[8]).toEqual value: "//", scopes: ["source.jison", "meta.section.declarations.jison", "meta.code.jison", "meta.action.jison", "comment.line.double-slash.js", "punctuation.definition.comment.js"]
       expect(tokens[9]).toEqual value: "comment", scopes: ["source.jison", "meta.section.declarations.jison", "meta.code.jison", "meta.action.jison", "comment.line.double-slash.js"]
       tokens = lines[4]
@@ -159,6 +159,9 @@ describe "language-jison", ->
       lines = grammar.tokenizeLines """
         %options foo={x}// not-a-comment
         %options no-default-action //comment
+        %options foo='string'
+                 bar=/**/42
+         baz=true//comment
       """
       tokens = lines[0]
       expect(tokens.length).toBe 7
@@ -175,6 +178,31 @@ describe "language-jison", ->
       expect(tokens[1]).toEqual value: " ", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison"]
       expect(tokens[2]).toEqual value: "no-default-action", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "entity.name.constant.jison"]
       expect(tokens[3]).toEqual value: " ", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison"]
+      expect(tokens[4]).toEqual value: "//", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "comment.line.double-slash.jison", "punctuation.definition.comment.jison"]
+      expect(tokens[5]).toEqual value: "comment", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "comment.line.double-slash.jison"]
+      tokens = lines[2]
+      expect(tokens.length).toBe 7
+      expect(tokens[0]).toEqual value: "%options", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "keyword.other.options.jison"]
+      expect(tokens[1]).toEqual value: " ", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison"]
+      expect(tokens[2]).toEqual value: "foo", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "entity.name.constant.jison"]
+      expect(tokens[3]).toEqual value: "=", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "keyword.operator.option.assignment.jison"]
+      expect(tokens[4]).toEqual value: "'", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "string.quoted.single.jison"]
+      expect(tokens[5]).toEqual value: "string", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "string.quoted.single.jison"]
+      expect(tokens[6]).toEqual value: "'", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "string.quoted.single.jison"]
+      tokens = lines[3]
+      expect(tokens.length).toBe 6
+      expect(tokens[0]).toEqual value: "         ", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison"]
+      expect(tokens[1]).toEqual value: "bar", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "entity.name.constant.jison"]
+      expect(tokens[2]).toEqual value: "=", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "keyword.operator.option.assignment.jison"]
+      expect(tokens[3]).toEqual value: "/*", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "comment.block.jison", "punctuation.definition.comment.begin.jison"]
+      expect(tokens[4]).toEqual value: "*/", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "comment.block.jison", "punctuation.definition.comment.end.jison"]
+      expect(tokens[5]).toEqual value: "42", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "constant.numeric.integer.decimal.jison"]
+      tokens = lines[4]
+      expect(tokens.length).toBe 6
+      expect(tokens[0]).toEqual value: " ", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison"]
+      expect(tokens[1]).toEqual value: "baz", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "entity.name.constant.jison"]
+      expect(tokens[2]).toEqual value: "=", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "keyword.operator.option.assignment.jison"]
+      expect(tokens[3]).toEqual value: "true", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "constant.language.boolean.true.jison"]
       expect(tokens[4]).toEqual value: "//", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "comment.line.double-slash.jison", "punctuation.definition.comment.jison"]
       expect(tokens[5]).toEqual value: "comment", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "comment.line.double-slash.jison"]
 
@@ -258,10 +286,10 @@ describe "language-jison", ->
       expect(tokens[2]).toEqual value: "EOF", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "keyword.other.EOF.jison"]
       expect(tokens[3]).toEqual value: " ", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison"]
       expect(tokens[4]).toEqual value: "{", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "punctuation.definition.action.begin.jison"]
-      expect(tokens[5]).toEqual value: "$$", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "variable.language.semantic-value.jison"]
-      expect(tokens[6]).toEqual value: " = [", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison"]
-      expect(tokens[7]).toEqual value: "$1", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "support.variable.token-value.jison"]
-      expect(tokens[8]).toEqual value: "];", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison"]
+      expect(tokens[5]).toEqual value: "$$", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "source.js.embedded.jison", "variable.language.semantic-value.jison"]
+      expect(tokens[6]).toEqual value: " = [", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "source.js.embedded.jison"]
+      expect(tokens[7]).toEqual value: "$1", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "source.js.embedded.jison", "support.variable.token-value.jison"]
+      expect(tokens[8]).toEqual value: "];", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "source.js.embedded.jison"]
       expect(tokens[9]).toEqual value: "}", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "punctuation.definition.action.end.jison"]
       tokens = lines[4]
       expect(tokens.length).toBe 16
@@ -275,11 +303,11 @@ describe "language-jison", ->
       expect(tokens[7]).toEqual value: "]", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "punctuation.definition.named-reference.end.jison"]
       expect(tokens[8]).toEqual value: " expression ", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison"]
       expect(tokens[9]).toEqual value: "%{", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "meta.user-code-block.jison", "punctuation.definition.user-code-block.begin.jison"]
-      expect(tokens[10]).toEqual value: " ", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "meta.user-code-block.jison"]
-      expect(tokens[11]).toEqual value: "$$", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "meta.user-code-block.jison", "variable.language.semantic-value.jison"]
-      expect(tokens[12]).toEqual value: " = `${", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "meta.user-code-block.jison"]
-      expect(tokens[13]).toEqual value: "@add", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "meta.user-code-block.jison", "support.variable.token-location.jison"]
-      expect(tokens[14]).toEqual value: ".first_line}`; ", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "meta.user-code-block.jison"]
+      expect(tokens[10]).toEqual value: " ", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "meta.user-code-block.jison", "source.js.embedded.jison"]
+      expect(tokens[11]).toEqual value: "$$", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "meta.user-code-block.jison", "source.js.embedded.jison", "variable.language.semantic-value.jison"]
+      expect(tokens[12]).toEqual value: " = `${", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "meta.user-code-block.jison", "source.js.embedded.jison"]
+      expect(tokens[13]).toEqual value: "@add", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "meta.user-code-block.jison", "source.js.embedded.jison", "support.variable.token-location.jison"]
+      expect(tokens[14]).toEqual value: ".first_line}`; ", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "meta.user-code-block.jison", "source.js.embedded.jison"]
       expect(tokens[15]).toEqual value: "%}", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "meta.user-code-block.jison", "punctuation.definition.user-code-block.end.jison"]
       tokens = lines[5]
       expect(tokens.length).toBe 15
@@ -294,9 +322,9 @@ describe "language-jison", ->
       expect(tokens[8]).toEqual value: "UMINUS", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.prec.jison", "constant.other.token.jison"]
       expect(tokens[9]).toEqual value: " ", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison"]
       expect(tokens[10]).toEqual value: "{", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "punctuation.definition.action.begin.jison"]
-      expect(tokens[11]).toEqual value: " ", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison"]
-      expect(tokens[12]).toEqual value: "yysp", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "variable.language.stack-index-0.jison"]
-      expect(tokens[13]).toEqual value: "; ", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison"]
+      expect(tokens[11]).toEqual value: " ", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "source.js.embedded.jison"]
+      expect(tokens[12]).toEqual value: "yysp", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "source.js.embedded.jison", "variable.language.stack-index-0.jison"]
+      expect(tokens[13]).toEqual value: "; ", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "source.js.embedded.jison"]
       expect(tokens[14]).toEqual value: "}", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "punctuation.definition.action.end.jison"]
       tokens = lines[6]
       expect(tokens.length).toBe 16
@@ -323,11 +351,11 @@ describe "language-jison", ->
       expect(tokens[2]).toEqual value: "error", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "keyword.other.error.jison"]
       expect(tokens[3]).toEqual value: " ", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison"]
       expect(tokens[4]).toEqual value: "->", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "punctuation.definition.action.arrow.jison"]
-      expect(tokens[5]).toEqual value: " ", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison"]
-      expect(tokens[6]).toEqual value: "yyclearin", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "keyword.other.jison"]
-      expect(tokens[7]).toEqual value: ";", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison"]
-      expect(tokens[8]).toEqual value: "yyerrok", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "keyword.other.jison"]
-      expect(tokens[9]).toEqual value: ";", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison"]
+      expect(tokens[5]).toEqual value: " ", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "source.js.embedded.jison"]
+      expect(tokens[6]).toEqual value: "yyclearin", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "source.js.embedded.jison", "keyword.other.jison"]
+      expect(tokens[7]).toEqual value: ";", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "source.js.embedded.jison"]
+      expect(tokens[8]).toEqual value: "yyerrok", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "source.js.embedded.jison", "keyword.other.jison"]
+      expect(tokens[9]).toEqual value: ";", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "source.js.embedded.jison"]
       expect(tokens[10]).toEqual value: "//", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "comment.line.double-slash.js", "punctuation.definition.comment.js"]
       expect(tokens[11]).toEqual value: "comment", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "comment.line.double-slash.js"]
       tokens = lines[8]
@@ -337,7 +365,7 @@ describe "language-jison", ->
       expect(tokens[2]).toEqual value: "%empty", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "keyword.other.empty.jison"]
       expect(tokens[3]).toEqual value: " ", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison"]
       expect(tokens[4]).toEqual value: "→", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "punctuation.definition.action.arrow.jison"]
-      expect(tokens[5]).toEqual value: ' ', scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison"]
+      expect(tokens[5]).toEqual value: ' ', scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "source.js.embedded.jison"]
       expect(tokens[6]).toEqual value: "//", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "comment.line.double-slash.js", "punctuation.definition.comment.js"]
       expect(tokens[7]).toEqual value: "comment", scopes: ["source.jison", "meta.section.rules.jison", "meta.rule.jison", "meta.rule-components.jison", "meta.action.jison", "comment.line.double-slash.js"]
       tokens = lines[9]
@@ -434,16 +462,16 @@ describe "language-jison", ->
       """
       tokens = lines[0]
       expect(tokens.length).toBe 3
-      expect(tokens[0]).toEqual value: "name1", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.definition.jisonlex", "entity.name.variable.jisonlex"]
+      expect(tokens[0]).toEqual value: "name1", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.definition.jisonlex", "entity.name.other.definition.jisonlex"]
       expect(tokens[1]).toEqual value: " ", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.definition.jisonlex"]
       expect(tokens[2]).toEqual value: "definition", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.definition.jisonlex", "string.regexp.jisonlex"]
       tokens = lines[1]
       expect(tokens.length).toBe 2
-      expect(tokens[0]).toEqual value: "name2", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.definition.jisonlex", "entity.name.variable.jisonlex"]
+      expect(tokens[0]).toEqual value: "name2", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.definition.jisonlex", "entity.name.other.definition.jisonlex"]
       expect(tokens[1]).toEqual value: ".", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.definition.jisonlex", "string.regexp.jisonlex", "keyword.other.character-class.any.regexp.jisonlex"]
       tokens = lines[2]
       expect(tokens.length).toBe 7
-      expect(tokens[0]).toEqual value: "name3", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.definition.jisonlex", "entity.name.variable.jisonlex"]
+      expect(tokens[0]).toEqual value: "name3", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.definition.jisonlex", "entity.name.other.definition.jisonlex"]
       expect(tokens[1]).toEqual value: " ", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.definition.jisonlex"]
       expect(tokens[2]).toEqual value: ".", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.definition.jisonlex", "string.regexp.jisonlex", "keyword.other.character-class.any.regexp.jisonlex"]
       expect(tokens[3]).toEqual value: "/*", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.definition.jisonlex", "string.regexp.jisonlex", "comment.block.jison", "punctuation.definition.comment.begin.jison"]
@@ -452,7 +480,7 @@ describe "language-jison", ->
       expect(tokens[6]).toEqual value: "%%", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.definition.jisonlex", "string.regexp.jisonlex", "comment.line.double-slash.jison"]
       tokens = lines[3]
       expect(tokens.length).toBe 2
-      expect(tokens[0]).toEqual value: "α-βγ", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.definition.jisonlex", "entity.name.variable.jisonlex"]
+      expect(tokens[0]).toEqual value: "α-βγ", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.definition.jisonlex", "entity.name.other.definition.jisonlex"]
       expect(tokens[1]).toEqual value: ".", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.definition.jisonlex", "string.regexp.jisonlex", "keyword.other.character-class.any.regexp.jisonlex"]
 
     it "tokenizes %{ %} blocks in definitions", ->
@@ -466,12 +494,12 @@ describe "language-jison", ->
       expect(tokens[0]).toEqual value: "%{", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.user-code-block.jison", "punctuation.definition.user-code-block.begin.jison"]
       tokens = lines[1]
       expect(tokens.length).toBe 1
-      expect(tokens[0]).toEqual value: "", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.user-code-block.jison"]
+      expect(tokens[0]).toEqual value: "", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.user-code-block.jison", "source.js.embedded.jison"]
       tokens = lines[2]
       expect(tokens.length).toBe 4
       expect(tokens[0]).toEqual value: "%}", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.user-code-block.jison", "punctuation.definition.user-code-block.end.jison"]
       expect(tokens[1]).toEqual value: " ", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex"]
-      expect(tokens[2]).toEqual value: "name", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.definition.jisonlex", "entity.name.variable.jisonlex"]
+      expect(tokens[2]).toEqual value: "name", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.definition.jisonlex", "entity.name.other.definition.jisonlex"]
       expect(tokens[3]).toEqual value: ".", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.definition.jisonlex", "string.regexp.jisonlex", "keyword.other.character-class.any.regexp.jisonlex"]
 
     it "tokenizes rules without start conditions", ->
@@ -493,9 +521,9 @@ describe "language-jison", ->
       expect(tokens[0]).toEqual value: "%{", scopes: ["source.jisonlex", "meta.section.rules.jisonlex", "meta.rule.action.jisonlex", "meta.user-code-block.jison", "punctuation.definition.user-code-block.begin.jison"]
       tokens = lines[3]
       expect(tokens.length).toBe 3
-      expect(tokens[0]).toEqual value: "  return ", scopes: ["source.jisonlex", "meta.section.rules.jisonlex", "meta.rule.action.jisonlex", "meta.user-code-block.jison"]
-      expect(tokens[1]).toEqual value: "yytext", scopes: ["source.jisonlex", "meta.section.rules.jisonlex", "meta.rule.action.jisonlex", "meta.user-code-block.jison", "variable.language.jisonlex"]
-      expect(tokens[2]).toEqual value: ";", scopes: ["source.jisonlex", "meta.section.rules.jisonlex", "meta.rule.action.jisonlex", "meta.user-code-block.jison"]
+      expect(tokens[0]).toEqual value: "  return ", scopes: ["source.jisonlex", "meta.section.rules.jisonlex", "meta.rule.action.jisonlex", "meta.user-code-block.jison", "source.js.embedded.jison"]
+      expect(tokens[1]).toEqual value: "yytext", scopes: ["source.jisonlex", "meta.section.rules.jisonlex", "meta.rule.action.jisonlex", "meta.user-code-block.jison", "source.js.embedded.jison", "variable.language.jisonlex"]
+      expect(tokens[2]).toEqual value: ";", scopes: ["source.jisonlex", "meta.section.rules.jisonlex", "meta.rule.action.jisonlex", "meta.user-code-block.jison", "source.js.embedded.jison"]
       tokens = lines[4]
       expect(tokens.length).toBe 1
       expect(tokens[0]).toEqual value: "%}", scopes: ["source.jisonlex", "meta.section.rules.jisonlex", "meta.rule.action.jisonlex", "meta.user-code-block.jison", "punctuation.definition.user-code-block.end.jison"]
@@ -560,11 +588,11 @@ describe "language-jison", ->
       expect(tokens[0]).toEqual value: ".", scopes: ["source.jisonlex", "meta.section.rules.jisonlex", "string.regexp.jisonlex", "keyword.other.character-class.any.regexp.jisonlex"]
       expect(tokens[1]).toEqual value: " ", scopes: ["source.jisonlex", "meta.section.rules.jisonlex"]
       expect(tokens[2]).toEqual value: "%{", scopes: ["source.jisonlex", "meta.section.rules.jisonlex", "meta.rule.action.jisonlex", "meta.user-code-block.jison", "punctuation.definition.user-code-block.begin.jison"]
-      expect(tokens[3]).toEqual value: " ", scopes: ["source.jisonlex", "meta.section.rules.jisonlex", "meta.rule.action.jisonlex", "meta.user-code-block.jison"]
+      expect(tokens[3]).toEqual value: " ", scopes: ["source.jisonlex", "meta.section.rules.jisonlex", "meta.rule.action.jisonlex", "meta.user-code-block.jison", "source.js.embedded.jison"]
       expect(tokens[4]).toEqual value: "%}", scopes: ["source.jisonlex", "meta.section.rules.jisonlex", "meta.rule.action.jisonlex", "meta.user-code-block.jison", "punctuation.definition.user-code-block.end.jison"]
       expect(tokens[5]).toEqual value: ".", scopes: ["source.jisonlex", "meta.section.rules.jisonlex", "string.regexp.jisonlex", "keyword.other.character-class.any.regexp.jisonlex"]
       expect(tokens[6]).toEqual value: " ", scopes: ["source.jisonlex", "meta.section.rules.jisonlex"]
-      expect(tokens[7]).toEqual value: "code", scopes: ["source.jisonlex", "meta.section.rules.jisonlex", "meta.rule.action.jisonlex"]
+      expect(tokens[7]).toEqual value: "code", scopes: ["source.jisonlex", "meta.section.rules.jisonlex", "meta.rule.action.jisonlex", "source.js.embedded.jison"]
       tokens = lines[2]
       expect(tokens.length).toBe 9
       expect(tokens[0]).toEqual value: ".", scopes: ["source.jisonlex", "meta.section.rules.jisonlex", "string.regexp.jisonlex", "keyword.other.character-class.any.regexp.jisonlex"]
@@ -575,7 +603,7 @@ describe "language-jison", ->
       expect(tokens[5]).toEqual value: ">", scopes: ["source.jisonlex", "meta.section.rules.jisonlex", "meta.start-conditions.jisonlex", "punctuation.definition.start-conditions.end.jisonlex"]
       expect(tokens[6]).toEqual value: ".", scopes: ["source.jisonlex", "meta.section.rules.jisonlex", "string.regexp.jisonlex", "keyword.other.character-class.any.regexp.jisonlex"]
       expect(tokens[7]).toEqual value: " ", scopes: ["source.jisonlex", "meta.section.rules.jisonlex"]
-      expect(tokens[8]).toEqual value: "code", scopes: ["source.jisonlex", "meta.section.rules.jisonlex", "meta.rule.action.jisonlex"]
+      expect(tokens[8]).toEqual value: "code", scopes: ["source.jisonlex", "meta.section.rules.jisonlex", "meta.rule.action.jisonlex", "source.js.embedded.jison"]
 
     it "tokenizes %include declarations", ->
       lines = grammar.tokenizeLines """
@@ -597,12 +625,12 @@ describe "language-jison", ->
       expect(tokens.length).toBe 10
       expect(tokens[0]).toEqual value: ".", scopes: ["source.jisonlex", "meta.section.rules.jisonlex", "string.regexp.jisonlex", "keyword.other.character-class.any.regexp.jisonlex"]
       expect(tokens[1]).toEqual value: " ", scopes: ["source.jisonlex", "meta.section.rules.jisonlex"]
-      expect(tokens[2]).toEqual value: "%include", scopes: ["source.jisonlex", "meta.section.rules.jisonlex", "meta.rule.action.jisonlex", "meta.include.jison", "keyword.other.declaration.include.jison"]
-      expect(tokens[3]).toEqual value: " ", scopes: ["source.jisonlex", "meta.section.rules.jisonlex", "meta.rule.action.jisonlex", "meta.include.jison"]
-      expect(tokens[4]).toEqual value: '"', scopes: ["source.jisonlex", "meta.section.rules.jisonlex", "meta.rule.action.jisonlex", "meta.include.jison", "string.quoted.double.jison"]
-      expect(tokens[5]).toEqual value: "file.js", scopes: ["source.jisonlex", "meta.section.rules.jisonlex", "meta.rule.action.jisonlex", "meta.include.jison", "string.quoted.double.jison"]
-      expect(tokens[6]).toEqual value: '"', scopes: ["source.jisonlex", "meta.section.rules.jisonlex", "meta.rule.action.jisonlex", "meta.include.jison", "string.quoted.double.jison"]
-      expect(tokens[7]).toEqual value: " ", scopes: ["source.jisonlex", "meta.section.rules.jisonlex", "meta.rule.action.jisonlex"]
+      expect(tokens[2]).toEqual value: "%include", scopes: ["source.jisonlex", "meta.section.rules.jisonlex", "meta.rule.action.jisonlex", "source.js.embedded.jison", "meta.include.jison", "keyword.other.declaration.include.jison"]
+      expect(tokens[3]).toEqual value: " ", scopes: ["source.jisonlex", "meta.section.rules.jisonlex", "meta.rule.action.jisonlex", "source.js.embedded.jison", "meta.include.jison"]
+      expect(tokens[4]).toEqual value: '"', scopes: ["source.jisonlex", "meta.section.rules.jisonlex", "meta.rule.action.jisonlex", "source.js.embedded.jison", "meta.include.jison", "string.quoted.double.jison"]
+      expect(tokens[5]).toEqual value: "file.js", scopes: ["source.jisonlex", "meta.section.rules.jisonlex", "meta.rule.action.jisonlex", "source.js.embedded.jison", "meta.include.jison", "string.quoted.double.jison"]
+      expect(tokens[6]).toEqual value: '"', scopes: ["source.jisonlex", "meta.section.rules.jisonlex", "meta.rule.action.jisonlex", "source.js.embedded.jison", "meta.include.jison", "string.quoted.double.jison"]
+      expect(tokens[7]).toEqual value: " ", scopes: ["source.jisonlex", "meta.section.rules.jisonlex", "meta.rule.action.jisonlex", "source.js.embedded.jison"]
       expect(tokens[8]).toEqual value: "//", scopes: ["source.jisonlex", "meta.section.rules.jisonlex", "meta.rule.action.jisonlex", "comment.line.double-slash.js", "punctuation.definition.comment.js"]
       expect(tokens[9]).toEqual value: " comment", scopes: ["source.jisonlex", "meta.section.rules.jisonlex", "meta.rule.action.jisonlex", "comment.line.double-slash.js"]
       tokens = lines[3]
@@ -610,8 +638,8 @@ describe "language-jison", ->
       expect(tokens[0]).toEqual value: "%%", scopes: ["source.jisonlex", "meta.separator.section.jisonlex"]
       tokens = lines[4]
       expect(tokens.length).toBe 5
-      expect(tokens[0]).toEqual value: "%include", scopes: ["source.jisonlex", "meta.section.user-code.jisonlex", "meta.include.jison", "keyword.other.declaration.include.jison"]
-      expect(tokens[1]).toEqual value: " ", scopes: ["source.jisonlex", "meta.section.user-code.jisonlex", "meta.include.jison"]
-      expect(tokens[2]).toEqual value: "'", scopes: ["source.jisonlex", "meta.section.user-code.jisonlex", "meta.include.jison", "string.quoted.single.jison"]
-      expect(tokens[3]).toEqual value: "file.js", scopes: ["source.jisonlex", "meta.section.user-code.jisonlex", "meta.include.jison", "string.quoted.single.jison"]
-      expect(tokens[4]).toEqual value: "'", scopes: ["source.jisonlex", "meta.section.user-code.jisonlex", "meta.include.jison", "string.quoted.single.jison"]
+      expect(tokens[0]).toEqual value: "%include", scopes: ["source.jisonlex", "meta.section.user-code.jisonlex", "source.js.embedded.jison", "meta.include.jison", "keyword.other.declaration.include.jison"]
+      expect(tokens[1]).toEqual value: " ", scopes: ["source.jisonlex", "meta.section.user-code.jisonlex", "source.js.embedded.jison", "meta.include.jison"]
+      expect(tokens[2]).toEqual value: "'", scopes: ["source.jisonlex", "meta.section.user-code.jisonlex", "source.js.embedded.jison", "meta.include.jison", "string.quoted.single.jison"]
+      expect(tokens[3]).toEqual value: "file.js", scopes: ["source.jisonlex", "meta.section.user-code.jisonlex", "source.js.embedded.jison", "meta.include.jison", "string.quoted.single.jison"]
+      expect(tokens[4]).toEqual value: "'", scopes: ["source.jisonlex", "meta.section.user-code.jisonlex", "source.js.embedded.jison", "meta.include.jison", "string.quoted.single.jison"]
