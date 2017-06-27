@@ -40,6 +40,7 @@ patterns: [
           {
             name:  "meta.section.epilogue.jison"
             begin: "\\G"
+            contentName: "source.js.embedded.jison"
             patterns: [include: "#epilogue_section"]
           }
         ]
@@ -98,6 +99,7 @@ repository:
                     name:  "meta.section.user-code.jisonlex"
                     begin: "\\G"
                     end:   "(?=/lex)"
+                    contentName: "source.js.embedded.jisonlex"
                     patterns: [include: "source.jisonlex#user_code_section"]
                   }
                 ]
@@ -287,6 +289,7 @@ repository:
         end:   "\\}\\}"
         beginCaptures: 0: name: "punctuation.definition.action.begin.jison"
         endCaptures:   0: name: "punctuation.definition.action.end.jison"
+        contentName: "source.js.embedded.jison"
         patterns: [include: "source.js"]
       },{
         name:  "meta.action.jison"
@@ -304,6 +307,7 @@ repository:
         end:   "\\}"
         beginCaptures: 0: name: "punctuation.definition.action.begin.jison"
         endCaptures:   0: name: "punctuation.definition.action.end.jison"
+        contentName: "source.js.embedded.jison"
         patterns: [include: "source.js"]
       }
       {include: "#include_declarations"}
@@ -324,6 +328,7 @@ repository:
         # can’t be the end pattern here because it will never be matched. Is
         # there an end pattern that can be used here that doesn’t duplicate a
         # JavaScript grammar pattern?
+        contentName: "source.js.embedded.jison"
         patterns: [include: "source.js"]
       }
     ]
@@ -451,6 +456,7 @@ repository:
         end:   "%\\}"
         beginCaptures: 0: name: "punctuation.definition.user-code-block.begin.jison"
         endCaptures:   0: name: "punctuation.definition.user-code-block.end.jison"
+        contentName: "source.js.embedded.jison"
         patterns: [include: "source.js"]
       }
     ]
