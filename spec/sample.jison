@@ -18,6 +18,8 @@ console.log('hello, world');
 
 %include include.js
 
+%options foo={x}// not-a-comment
+
 %code/**/init %include 'include.js'//comment
 %code required %include "include.js"
 %code 'init' {{ return; }}
