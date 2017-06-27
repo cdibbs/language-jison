@@ -58,7 +58,7 @@ repository:
         name:  "meta.definition.jisonlex"
         begin: "\\b[[:alpha:]_](?:[\\w-]*\\w)?\\b"
         end:   "$"
-        beginCaptures: 0: name: "entity.name.variable.jisonlex"
+        beginCaptures: 0: name: "entity.name.other.definition.jisonlex"
         patterns: [
           {include: "source.jison#comments"}
           {
@@ -155,8 +155,11 @@ repository:
   name_uses:
     patterns: [
       {
-        name:  "variable.other.jisonlex"
-        match: "\\{[[:alpha:]_](?:[\\w-]*\\w)?\\}"
+        name:  "constant.other.name-use.jisonlex"
+        match: "(\\{)[[:alpha:]_](?:[\\w-]*\\w)?(\\})"
+        captures:
+          1: name: "punctuation.definition.name-use.begin.jisonlex"
+          2: name: "punctuation.definition.name-use.end.jisonlex"
       }
     ]
 

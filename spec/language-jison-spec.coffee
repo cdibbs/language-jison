@@ -462,16 +462,16 @@ describe "language-jison", ->
       """
       tokens = lines[0]
       expect(tokens.length).toBe 3
-      expect(tokens[0]).toEqual value: "name1", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.definition.jisonlex", "entity.name.variable.jisonlex"]
+      expect(tokens[0]).toEqual value: "name1", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.definition.jisonlex", "entity.name.other.definition.jisonlex"]
       expect(tokens[1]).toEqual value: " ", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.definition.jisonlex"]
       expect(tokens[2]).toEqual value: "definition", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.definition.jisonlex", "string.regexp.jisonlex"]
       tokens = lines[1]
       expect(tokens.length).toBe 2
-      expect(tokens[0]).toEqual value: "name2", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.definition.jisonlex", "entity.name.variable.jisonlex"]
+      expect(tokens[0]).toEqual value: "name2", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.definition.jisonlex", "entity.name.other.definition.jisonlex"]
       expect(tokens[1]).toEqual value: ".", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.definition.jisonlex", "string.regexp.jisonlex", "keyword.other.character-class.any.regexp.jisonlex"]
       tokens = lines[2]
       expect(tokens.length).toBe 7
-      expect(tokens[0]).toEqual value: "name3", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.definition.jisonlex", "entity.name.variable.jisonlex"]
+      expect(tokens[0]).toEqual value: "name3", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.definition.jisonlex", "entity.name.other.definition.jisonlex"]
       expect(tokens[1]).toEqual value: " ", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.definition.jisonlex"]
       expect(tokens[2]).toEqual value: ".", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.definition.jisonlex", "string.regexp.jisonlex", "keyword.other.character-class.any.regexp.jisonlex"]
       expect(tokens[3]).toEqual value: "/*", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.definition.jisonlex", "string.regexp.jisonlex", "comment.block.jison", "punctuation.definition.comment.begin.jison"]
@@ -480,7 +480,7 @@ describe "language-jison", ->
       expect(tokens[6]).toEqual value: "%%", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.definition.jisonlex", "string.regexp.jisonlex", "comment.line.double-slash.jison"]
       tokens = lines[3]
       expect(tokens.length).toBe 2
-      expect(tokens[0]).toEqual value: "α-βγ", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.definition.jisonlex", "entity.name.variable.jisonlex"]
+      expect(tokens[0]).toEqual value: "α-βγ", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.definition.jisonlex", "entity.name.other.definition.jisonlex"]
       expect(tokens[1]).toEqual value: ".", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.definition.jisonlex", "string.regexp.jisonlex", "keyword.other.character-class.any.regexp.jisonlex"]
 
     it "tokenizes %{ %} blocks in definitions", ->
@@ -499,7 +499,7 @@ describe "language-jison", ->
       expect(tokens.length).toBe 4
       expect(tokens[0]).toEqual value: "%}", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.user-code-block.jison", "punctuation.definition.user-code-block.end.jison"]
       expect(tokens[1]).toEqual value: " ", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex"]
-      expect(tokens[2]).toEqual value: "name", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.definition.jisonlex", "entity.name.variable.jisonlex"]
+      expect(tokens[2]).toEqual value: "name", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.definition.jisonlex", "entity.name.other.definition.jisonlex"]
       expect(tokens[3]).toEqual value: ".", scopes: ["source.jisonlex", "meta.section.definitions.jisonlex", "meta.definition.jisonlex", "string.regexp.jisonlex", "keyword.other.character-class.any.regexp.jisonlex"]
 
     it "tokenizes rules without start conditions", ->
