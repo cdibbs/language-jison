@@ -397,7 +397,7 @@ repository:
       {
         name:  "meta.options.jison"
         begin: "%options\\b"
-        end:   "$"
+        end:   "^(?=\\S|\\s*$)"
         beginCaptures: 0: name: "keyword.other.options.jison"
         patterns: [
           {include: "#comments"}
@@ -409,14 +409,20 @@ repository:
             end:   "(?<=['\"])|(?=\\s)"
             beginCaptures: 1: name: "keyword.operator.option.assignment.jison"
             patterns: [
-              {include: "quoted_strings"}
+              {include: "#comments"}
+              {
+                name:  "constant.language.boolean.$1.jison"
+                match: "\\b(true|false)\\b"
+              }
+              {include: "#numbers"}
+              {include: "#quoted_strings"}
               {
                 name:  "string.unquoted.jison"
                 match: "\\S+"
               }
             ]
           }
-          {include: "quoted_strings"}
+          {include: "#quoted_strings"}
         ]
       }
     ]

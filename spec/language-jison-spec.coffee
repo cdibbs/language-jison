@@ -159,6 +159,9 @@ describe "language-jison", ->
       lines = grammar.tokenizeLines """
         %options foo={x}// not-a-comment
         %options no-default-action //comment
+        %options foo='string'
+                 bar=/**/42
+         baz=true//comment
       """
       tokens = lines[0]
       expect(tokens.length).toBe 7
@@ -175,6 +178,31 @@ describe "language-jison", ->
       expect(tokens[1]).toEqual value: " ", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison"]
       expect(tokens[2]).toEqual value: "no-default-action", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "entity.name.constant.jison"]
       expect(tokens[3]).toEqual value: " ", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison"]
+      expect(tokens[4]).toEqual value: "//", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "comment.line.double-slash.jison", "punctuation.definition.comment.jison"]
+      expect(tokens[5]).toEqual value: "comment", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "comment.line.double-slash.jison"]
+      tokens = lines[2]
+      expect(tokens.length).toBe 7
+      expect(tokens[0]).toEqual value: "%options", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "keyword.other.options.jison"]
+      expect(tokens[1]).toEqual value: " ", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison"]
+      expect(tokens[2]).toEqual value: "foo", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "entity.name.constant.jison"]
+      expect(tokens[3]).toEqual value: "=", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "keyword.operator.option.assignment.jison"]
+      expect(tokens[4]).toEqual value: "'", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "string.quoted.single.jison"]
+      expect(tokens[5]).toEqual value: "string", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "string.quoted.single.jison"]
+      expect(tokens[6]).toEqual value: "'", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "string.quoted.single.jison"]
+      tokens = lines[3]
+      expect(tokens.length).toBe 6
+      expect(tokens[0]).toEqual value: "         ", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison"]
+      expect(tokens[1]).toEqual value: "bar", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "entity.name.constant.jison"]
+      expect(tokens[2]).toEqual value: "=", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "keyword.operator.option.assignment.jison"]
+      expect(tokens[3]).toEqual value: "/*", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "comment.block.jison", "punctuation.definition.comment.begin.jison"]
+      expect(tokens[4]).toEqual value: "*/", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "comment.block.jison", "punctuation.definition.comment.end.jison"]
+      expect(tokens[5]).toEqual value: "42", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "constant.numeric.integer.decimal.jison"]
+      tokens = lines[4]
+      expect(tokens.length).toBe 6
+      expect(tokens[0]).toEqual value: " ", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison"]
+      expect(tokens[1]).toEqual value: "baz", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "entity.name.constant.jison"]
+      expect(tokens[2]).toEqual value: "=", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "keyword.operator.option.assignment.jison"]
+      expect(tokens[3]).toEqual value: "true", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "constant.language.boolean.true.jison"]
       expect(tokens[4]).toEqual value: "//", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "comment.line.double-slash.jison", "punctuation.definition.comment.jison"]
       expect(tokens[5]).toEqual value: "comment", scopes: ["source.jison", "meta.section.declarations.jison", "meta.options.jison", "comment.line.double-slash.jison"]
 

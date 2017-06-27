@@ -19,6 +19,8 @@ console.log('hello, world');
 %include include.js
 
 %options foo={x}// not-a-comment
+         bar=/**/42
+ baz=true//comment
 
 %code/**/init %include 'include.js'//comment
 %code required %include "include.js"
