@@ -2,6 +2,15 @@
   editor:
     commentStart: "// "
 
+".rules.jison":
+  editor:
+    decreaseIndentPattern: "^"
+
+".rule.jison":
+  editor:
+    increaseIndentPattern: "\\b[[:alpha:]_](?:[\\w-]*\\w)?\\b"
+    decreaseIndentPattern: "(?!)"
+
 ".rule-components.jison":
   autocomplete:
     symbols:
@@ -16,3 +25,6 @@
           "EOF"
           "error"
         ]
+  editor:
+    increaseIndentPattern: ":|\\|"
+    decreaseIndentPattern: "\\||;"
