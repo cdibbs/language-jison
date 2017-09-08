@@ -498,7 +498,7 @@ injections:
         match: "#(?:-?\\d+|[[:alpha:]_](?:[\\w-]*\\w)?)"
       },{
         name:  "variable.language.jison"
-        match: "\\byy(?:l(?:eng|ineno|oc|stack)|s(?:tate|s?tack)|text|vstack)\\b"
+        match: "\\byy(?:l(?:eng|ineno|oc|stack)|rulelength|s(?:tate|s?tack)|text|vstack)\\b"
       },{
         name:  "keyword.other.jison"
         match: "\\byy(?:clearin|erro[kr])\\b"
