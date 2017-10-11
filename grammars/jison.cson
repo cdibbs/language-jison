@@ -68,7 +68,7 @@ repository:
       # Jison declarations sections can have lexers embedded between %lex and
       # /lex.
       {
-        begin: "^\\s*(%lex)\\s*(?=\\n)"
+        begin: "^\\s*(%lex)\\s*$"
         end:   "^\\s*(/lex)\\b"
         # There may be a better choice of scope than “entity.name.tag”, but
         # using a tag scope makes the start and end matches stand out. Also, the
@@ -106,13 +106,13 @@ repository:
               },{
                 name:  "meta.section.rules.jisonlex"
                 begin: "\\G"
-                end:   "(?=^(?:%%|/lex))"
+                end:   "^(?=%%|/lex)"
                 patterns: [include: "source.jisonlex#rules_section"]
               }
             ]
           },{
             name:  "meta.section.definitions.jisonlex"
-            begin: "\\G"
+            begin: "^"
             end:   "(?=%%|/lex)"
             patterns: [include: "source.jisonlex#definitions_section"]
           }
@@ -315,19 +315,8 @@ repository:
         name:  "meta.action.jison"
         # GerHobbelt Jison supports -> and → (U+2192 RIGHTWARDS ARROW).
         begin: "->|→"
-        end:   "((//).*)?(?=$)"
-        beginCaptures:
-          0: name: "punctuation.definition.action.arrow.jison"
-        endCaptures:
-          1: name: "comment.line.double-slash.js"
-          2: name: "punctuation.definition.comment.js"
-        # TODO: The end pattern is based on the comment.line.double-slash.js
-        # pattern in
-        # https://github.com/atom/language-javascript/blob/master/grammars/javascript.cson.
-        # The end pattern of comment.line.double-slash.js is itself $, so $
-        # can’t be the end pattern here because it will never be matched. Is
-        # there an end pattern that can be used here that doesn’t duplicate a
-        # JavaScript grammar pattern?
+        end:   "$"
+        beginCaptures: 0: name: "punctuation.definition.action.arrow.jison"
         contentName: "source.js.embedded.jison"
         patterns: [include: "source.js"]
       }
@@ -338,7 +327,7 @@ repository:
       {
         name:  "comment.line.double-slash.jison"
         begin: "//"
-        end:   "(?=\\n)"
+        end:   "$"
         beginCaptures: 0: name: "punctuation.definition.comment.jison"
       },{
         name:  "comment.block.jison"

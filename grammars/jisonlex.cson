@@ -133,12 +133,7 @@ repository:
       },{
         name:  "meta.rule.action.jisonlex"
         begin: "(?=\\S)"
-        end:   "((//).*)?(?=$)"
-        endCaptures:
-          1: name: "comment.line.double-slash.js"
-          2: name: "punctuation.definition.comment.js"
-        # TODO: See the arrow (->) action in the Jison grammar for what’s going
-        # on with the duplicated JavaScript comment patterns.
+        end:   "$"
         contentName: "source.js.embedded.jison"
         patterns: [
           {include: "source.jison#include_declarations"}
