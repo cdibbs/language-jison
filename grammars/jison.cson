@@ -456,7 +456,7 @@ repository:
 injections:
   # Putting parentheses around the selector following L: may be required; see
   # https://github.com/github/linguist/issues/3612.
-  "L:(meta.action.jison - (comment | string)), source.js.embedded.jison":
+  "L:(meta.action.jison - (comment | string)), source.js.embedded.jison - (comment | string)":
     patterns: [
       {
         name:  "variable.language.semantic-value.jison"
