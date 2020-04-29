@@ -31,15 +31,18 @@ patterns: [
     # files is that they’re divided into three sections separated by %%, just
     # like Jison Lex files.
     begin: "%%"
+    end:   "\\z"
     beginCaptures: 0: name: "meta.separator.section.jison"
     patterns: [
       {
         begin: "%%"
+        end:   "\\z"
         beginCaptures: 0: name: "meta.separator.section.jison"
         patterns: [
           {
             name:  "meta.section.epilogue.jison"
             begin: "\\G"
+            end:   "\\z"
             contentName: "source.js.embedded.jison"
             patterns: [include: "#epilogue_section"]
           }
@@ -81,7 +84,7 @@ repository:
         #   pattern; /lex is the same as (?=lex).
         # - The user-code section treats /lex as a division operator followed by
         #   the identifier “lex”.
-        # - The user-code section also does not end.
+        # - The user-code section ends at the end of the Jison Lex file.
         # This is the Jison Lex grammar with end patterns that circumvent these
         # issues.
         patterns: [
