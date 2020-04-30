@@ -19,17 +19,20 @@ patterns: [
     # a line, but that’s not the case for the separator between definitions and
     # rules in Jison Lex.
     begin: "%%"
+    end:   "\\z"
     beginCaptures: 0: name: "meta.separator.section.jisonlex"
     patterns: [
       {
         # The separator between rules and user code in Jison Lex must be at the
         # beginning of a line.
         begin: "^%%"
+        end:   "\\z"
         beginCaptures: 0: name: "meta.separator.section.jisonlex"
         patterns: [
           {
             name:  "meta.section.user-code.jisonlex"
             begin: "\\G"
+            end:   "\\z"
             contentName: "source.js.embedded.jison"
             patterns: [include: "#user_code_section"]
           }
